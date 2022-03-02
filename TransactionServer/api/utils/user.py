@@ -5,6 +5,7 @@ from api.utils.quoteServer import getQuote
 from hashlib import sha256
 from bson.objectid import ObjectId
 from api.utils.db import dbCallWrapper
+import xml.dom
 
 db, client = getDb()
 
@@ -90,7 +91,7 @@ def buyStock(username, amount, quote, transactionId):
             'price': price,
             'timestamp': timestamp,
         }
-    raise Exception('Insufficient balance')
+    raise Exception('Insufficient balance, stock is {}, price is {}, amount is {}, balance is {}, total price is {}'.format(stock, str(price), str(amount), str(user['balance']), str(amount * price)))
 
 # removes the pending buy
 # adds the transaction to the transactions list
@@ -309,10 +310,10 @@ def setSellTrigger(username, stock, price, transactionId):
     raise Exception('No pending trigger')
 def cancelSellTrigger(username, stock, transactionId):
     user = getUser(username)
-    if(user['sell_triggers'][stock] and user['triggers'][stock]['type'] == 'sell'):
+    if(user['sell_triggers'][stock] and user['sell_triggers'][stock]['type'] == 'sell'):
         return dbCallWrapper({'username': username}, {
             '$set': {
-                'triggers.' + stock: None
+                'sell_triggers.' + stock: None
             }
         }, func = db.user.update_one, eventLog={'type': 'debugEvent', 'username': str(username), 'timestamp': int(time.time()), 'action': 'CANCEL_SELL_TRIGGER', 'stock': stock, 'transactionId': transactionId})
     raise Exception('No active sell trigger on specified stock')
@@ -322,7 +323,7 @@ def cancelBuyTrigger(username, stock, transactionId):
     if(user['buy_triggers'][stock] and user['buy_triggers'][stock]['type'] == 'buy'):
         return dbCallWrapper({'username': username}, {
             '$set': {
-                'triggers.' + stock: None
+                'buy_triggers.' + stock: None
             }
         }, func = db.user.update_one, eventLog = {'type': 'debugEvent', 'username': str(username), 'timestamp': int(time.time()), 'action': 'CANCEL_SELL_TRIGGER', 'stock': stock, 'transactionId': transactionId})
 
@@ -335,20 +336,35 @@ def dumplogXML(username = None):
         docs = dbCallWrapper({'username': username}, {}, func = db.log.find, eventLog = False)
     else:
         docs = dbCallWrapper({}, {}, func = db.log.find, eventLog = False)
-    new_docs = '<?xml version="1.0" encoding="US-ASCII"?>\n\t<log>'
+    new_docs = '<?xml version="1.0"?>\n\t<log>'
+    transactionids = []
     for doc in docs:
         new_docs += '\t<'+doc['type']+'>\n'
         if 'transactionId' in doc.keys():
-            new_docs += '\t\t<transactionId>'+str(doc['transactionId'])+'</transactionId>\n'
+            if doc['transactionId'] in transactionids:
+                
+                index = transactionids.index(doc['transactionId'])
+
+                new_docs += '\t\t<transactionNum>'+str(index)+'</transactionNum>\n'
         else:
-            new_docs += '\t\t<transactionId>'+str(doc['_id'])+'</transactionId>\n'
+            transactionids.append(doc['_id'])
+            new_docs += '\t\t<transactionNum>'+str(len(transactionids) - 1)+'</transactionNum>\n'
         for key in doc:
-            if key != 'type' and key != '_id' and key != 'transactionId':
+            if key == 'ticker':
+                new_docs += '\t\t<stockSymbol>'+doc[key]+'</stockSymbol>\n'
+            elif key == 'amount':
+                new_docs += '\t\t<funds>'+str(doc[key])+'</funds>\n'
+            elif key == 'command':
+                new_docs += '\t\t<command>'+doc[key].upper()+'</command>\n'
+            elif key == 'userid':
+                new_docs += '\t\t<username>'+doc[key]+'</username>\n'
+            elif key == 'timestamp':
+                new_docs += '\t\t<timestamp>'+str(int(doc[key]) * 1000)+'</timestamp>\n'
+            elif key != 'type' and key != '_id' and key != 'transactionId':
                 new_docs += '\t\t<'+key+'>'+str(doc[key])+'</'+key+'>\n'
         new_docs += '\t</'+doc['type']+'>\n'
     new_docs += '</log>'
     return new_docs
-            
 
 def displayUserSummary(username):
     user = getUser(username)
