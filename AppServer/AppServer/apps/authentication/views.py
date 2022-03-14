@@ -66,9 +66,7 @@ class RegistrationAPIView(APIView):
         username = serializer.data['username']
         #password = serializer.data['password']
         data = {"username": username, "password": password, "name": username}
-        print("the data is ", data)
         r = requests.post('https://dta-transaction-server.herokuapp.com/api/create_user/', data=data)
-        print("response from transaction server ", r.text)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
