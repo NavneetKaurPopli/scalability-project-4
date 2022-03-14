@@ -144,4 +144,5 @@ REST_FRAMEWORK = {
    
 }
 django_heroku.settings(locals())
-CSRF_COOKIE_SECURE=False
+CSRF_COOKIE_SECURE=True
+SESSION_COOKIE_SECURE=True
