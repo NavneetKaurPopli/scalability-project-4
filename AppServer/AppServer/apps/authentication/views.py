@@ -109,7 +109,7 @@ class AddAPIView(RetrieveUpdateAPIView):
         user = request.data.get('user', {})
         serializer = self.serializer_class(data=user, partial=True)
         serializer.is_valid(raise_exception=True)
-        r = requests.post('https://dta-transaction-server.herokuapp.com/api/add/', params=serializer.data)
+        r = requests.post('https://dta-transaction-server.herokuapp.com/api/add/', data=serializer.data)
 
         message = {"message": "add amount endpoint", "serializer_data":serializer.data, "response from transaction": r.text}
         return Response(message, status=status.HTTP_200_OK)
