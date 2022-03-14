@@ -16,6 +16,7 @@ import environ
 env = environ.Env()
 environ.Env.read_env()
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -27,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-m$d4f(b3dm8t9jy8rh1^6kn9!7=z2w)^*c6itr&cxxhj%$$lwj'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = env('PROD')
 
 ALLOWED_HOSTS = []
 

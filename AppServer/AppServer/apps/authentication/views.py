@@ -45,7 +45,7 @@ class LoginAPIView(APIView):
         # handles everything we need.
         serializer = self.serializer_class(data=user)
         serializer.is_valid(raise_exception=True)
-        r = requests.post('https://dta-transaction-server.herokuapp.com/api/create_user/', params=serializer.data)
+        #r = requests.post('https://dta-transaction-server.herokuapp.com/api/create_user/', params=serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class RegistrationAPIView(APIView):
@@ -56,15 +56,20 @@ class RegistrationAPIView(APIView):
 
     def post(self, request):
         user = request.data.get('user', {})
-
+        password = user['password']
         # The create serializer, validate serializer, save serializer pattern
         # below is common and you will see it a lot throughout this course and
         # your own work later on. Get familiar with it.
         serializer = self.serializer_class(data=user)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        r = requests.post('https://dta-transaction-server.herokuapp.com/api/users/', params=serializer.data)
-        return Response(r.text, status=status.HTTP_201_CREATED)
+        username = serializer.data['username']
+        #password = serializer.data['password']
+        data = {"username": username, "password": password, "name": username}
+        print("the data is ", data)
+        r = requests.post('https://dta-transaction-server.herokuapp.com/api/create_user/', data=data)
+        print("response from transaction server ", r.text)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
     permission_classes = (IsAuthenticated,)
