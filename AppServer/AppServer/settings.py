@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-m$d4f(b3dm8t9jy8rh1^6kn9!7=z2w)^*c6itr&cxxhj%$$lwj
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
-
+CSRF_TRUSTED_ORIGINS = ['https://daytradingseng468.herokuapp.com']
 ALLOWED_HOSTS = []
 
 
