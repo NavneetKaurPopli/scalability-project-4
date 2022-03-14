@@ -45,7 +45,7 @@ class LoginAPIView(APIView):
         # handles everything we need.
         serializer = self.serializer_class(data=user)
         serializer.is_valid(raise_exception=True)
-
+        r = requests.post('https://dta-transaction-server.herokuapp.com/api/create_user/', params=serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class RegistrationAPIView(APIView):
@@ -63,8 +63,8 @@ class RegistrationAPIView(APIView):
         serializer = self.serializer_class(data=user)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        r = requests.post('https://dta-transaction-server.herokuapp.com/api/users/', params=serializer.data)
+        return Response(r.text, status=status.HTTP_201_CREATED)
 
 class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
     permission_classes = (IsAuthenticated,)
