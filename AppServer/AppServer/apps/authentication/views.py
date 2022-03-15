@@ -135,11 +135,12 @@ class BuyStockAPIView(APIView):
 
     def post(self, request):
         user = request.data.get('user', {})
+        print("here")
         serializer = self.serializer_class(
             data=user
-        
         )
         serializer.is_valid(raise_exception=True)
+        print("serializer data is: ", serializer.data)
         r = requests.post(url='https://dta-transaction-server.herokuapp.com/api/buy/',  data=serializer.data)
         message = {"message": "buy stock endpoint", "serializer_data":serializer.data, "response from transaction": r.text}
         return Response(message, status=status.HTTP_200_OK)

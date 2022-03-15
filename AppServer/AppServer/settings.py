@@ -145,10 +145,12 @@ AUTH_USER_MODEL = 'authentication.User'
 #}
 
 REST_FRAMEWORK = {
-    'DEFAULT_PARSER_CLASSES': (
-        'rest_framework.parsers.FormParser',
-        'rest_framework.parsers.MultiPartParser'
-    )
+         # Global analysis configuration
+    'DEFAULT_PARSER_CLASSES': [
+                 'rest_framework.parsers.JSONParser', # Parse json packet
+                 'rest_framework.parsers.FormParser', # parse urlencoded packets
+                 'rest_framework.parsers.MultiPartParser' # parse from-data packet
+    ],
 }
 django_heroku.settings(locals())
 CSRF_COOKIE_SECURE=True
