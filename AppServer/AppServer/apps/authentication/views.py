@@ -43,10 +43,10 @@ class LoginAPIView(APIView):
         # the registration endpoint. This is because we don't  have
         # anything to save. Instead, the `validate` method on our serializer
         # handles everything we need.
-        serializer = self.serializer_class(data=user)
-        serializer.is_valid(raise_exception=True)
+        #serializer = self.serializer_class(data=user)
+        #serializer.is_valid(raise_exception=True)
         #r = requests.post('https://dta-transaction-server.herokuapp.com/api/create_user/', params=serializer.data)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response("response good", status=status.HTTP_200_OK)
 
 class RegistrationAPIView(APIView):
     # Allow any user (authenticated or not) to hit this endpoint.
