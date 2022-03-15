@@ -31,7 +31,7 @@ from .serializers import (
         #will be routed to mongo server
 
 class LoginAPIView(APIView):
-    permission_classes = (AllowAny,)
+    #permission_classes = (AllowAny,)
     ##renderer_classes = (UserJSONRenderer,)
     serializer_class = LoginSerializer
 
@@ -50,7 +50,7 @@ class LoginAPIView(APIView):
 
 class RegistrationAPIView(APIView):
     # Allow any user (authenticated or not) to hit this endpoint.
-    permission_classes = (AllowAny,)
+    #permission_classes = (AllowAny,)
     ##renderer_classes = (UserJSONRenderer,)
     serializer_class = RegistrationSerializer
 
@@ -71,7 +71,7 @@ class RegistrationAPIView(APIView):
         return Response("response good", status=status.HTTP_201_CREATED)
 
 class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
-    permission_classes = (IsAuthenticated,)
+    #permission_classes = (IsAuthenticated,)
     #renderer_classes = (UserJSONRenderer,)
     serializer_class = UserSerializer
 
@@ -102,7 +102,7 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class AddAPIView(RetrieveUpdateAPIView):
-    permission_classes = (IsAuthenticated,)
+    #permission_classes = (IsAuthenticated,)
     #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameAmountSerializer
 
@@ -116,7 +116,7 @@ class AddAPIView(RetrieveUpdateAPIView):
         return Response(message, status=status.HTTP_200_OK)
 
 class QuoteAPIView(APIView):
-    permission_classes = (IsAuthenticated,)
+    #permission_classes = (IsAuthenticated,)
     #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameStockSerializer
 
@@ -129,7 +129,7 @@ class QuoteAPIView(APIView):
         return Response(message, status=status.HTTP_200_OK)
 
 class BuyStockAPIView(APIView):
-    permission_classes = (IsAuthenticated,)
+    #permission_classes = (IsAuthenticated,)
     #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameAmountStockSerializer
 
@@ -145,7 +145,7 @@ class BuyStockAPIView(APIView):
         return Response(message, status=status.HTTP_200_OK)
 
 class CommitBuyAPIView(APIView):
-    permission_classes = (IsAuthenticated,)
+    #permission_classes = (IsAuthenticated,)
     #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameSerializer
 
@@ -161,7 +161,7 @@ class CommitBuyAPIView(APIView):
         return Response(message, status=status.HTTP_200_OK)
 
 class CancelBuyAPIView(APIView):
-    permission_classes = (IsAuthenticated,)
+    #permission_classes = (IsAuthenticated,)
     #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameSerializer
 
@@ -176,7 +176,7 @@ class CancelBuyAPIView(APIView):
         return Response(message, status=status.HTTP_200_OK)
 
 class SellStockAPIView(APIView):
-    permission_classes = (IsAuthenticated,)
+    #permission_classes = (IsAuthenticated,)
     #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameAmountStockSerializer
 
@@ -194,7 +194,7 @@ class SellStockAPIView(APIView):
         return Response(message, status=status.HTTP_200_OK)
 
 class CommitSellAPIView(APIView):
-    permission_classes = (IsAuthenticated,)
+    #permission_classes = (IsAuthenticated,)
     #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameSerializer
 
@@ -207,7 +207,7 @@ class CommitSellAPIView(APIView):
         return Response(message, status=status.HTTP_200_OK)
 
 class CancelSellAPIView(APIView):
-    permission_classes = (IsAuthenticated,)
+    #permission_classes = (IsAuthenticated,)
     #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameSerializer
 
@@ -222,7 +222,7 @@ class CancelSellAPIView(APIView):
         return Response(message, status=status.HTTP_200_OK)
 
 class SetBuyAmountAPIView(APIView):
-    permission_classes = (IsAuthenticated,)
+    #permission_classes = (IsAuthenticated,)
     #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameAmountStockSerializer
 
@@ -239,7 +239,7 @@ class SetBuyAmountAPIView(APIView):
         return Response(message, status=status.HTTP_200_OK)
 
 class CancelSetBuyAPIView(APIView):
-    permission_classes = (IsAuthenticated,)
+    #permission_classes = (IsAuthenticated,)
     #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameStockSerializer
 
@@ -255,7 +255,7 @@ class CancelSetBuyAPIView(APIView):
         return Response(message, status=status.HTTP_200_OK)
 
 class SetBuyTriggerAPIView(APIView):
-    permission_classes = (IsAuthenticated,)
+    #permission_classes = (IsAuthenticated,)
     #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameAmountStockSerializer
 
@@ -271,7 +271,7 @@ class SetBuyTriggerAPIView(APIView):
         return Response(message, status=status.HTTP_200_OK)
 
 class SetSellAmountAPIView(APIView):
-    permission_classes = (IsAuthenticated,)
+    #permission_classes = (IsAuthenticated,)
     #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameAmountStockSerializer
 
@@ -287,7 +287,7 @@ class SetSellAmountAPIView(APIView):
         return Response(message, status=status.HTTP_200_OK)
 
 class SetSellTriggerAPIView(APIView):
-    permission_classes = (IsAuthenticated,)
+    #permission_classes = (IsAuthenticated,)
     #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameAmountStockSerializer
 
@@ -303,7 +303,7 @@ class SetSellTriggerAPIView(APIView):
         return Response(message, status=status.HTTP_200_OK)
 
 class CancelSetSellAPIView(APIView):
-    permission_classes = (IsAuthenticated,)
+    #permission_classes = (IsAuthenticated,)
     #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameStockSerializer
 
@@ -322,7 +322,7 @@ class CancelSetSellAPIView(APIView):
 
 #get probably
 class DumpLogAPIVeiw(APIView):
-    permission_classes = (IsAuthenticated,)
+    #permission_classes = (IsAuthenticated,)
     #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameDumplogSerializer
 
@@ -335,7 +335,7 @@ class DumpLogAPIVeiw(APIView):
         return Response(message, status=status.HTTP_200_OK)
 
 class DumpLogAdminAPIVeiw(APIView):
-    permission_classes = (IsAdminUser,)
+    #permission_classes = (IsAdminUser,)
     #renderer_classes = (UserJSONRenderer,)
     serializer_class = DumplogSerializer
 
@@ -348,7 +348,7 @@ class DumpLogAdminAPIVeiw(APIView):
         return Response(message, status=status.HTTP_200_OK)
     
 class DisplaySummary(APIView):
-    permission_classes = (IsAuthenticated,)
+    #permission_classes = (IsAuthenticated,)
     #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameSerializer
     
