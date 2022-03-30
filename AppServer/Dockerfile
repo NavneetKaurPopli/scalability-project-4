@@ -1,8 +1,16 @@
 # syntax=docker/dockerfile:1
-FROM python:3.9-alphine
+FROM python:3.9
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
-WORKDIR /AppServer
-COPY requirements.txt /AppServer/
-RUN pip install -r requirements.txt
-COPY . /AppServer/
+ENV PROJECT_DIR /usr/local/src/serverapp
+RUN pip install pipenv
+
+EXPOSE 8000
+ENV LISTEN_PORT=8000
+ENV UWSGI_INIT uwsgi.ini
+
+WORKDIR ${PROJECT_DIR}/
+COPY Pipfile Pipfile.lock ${PROJECT_DIR}/
+RUN pipenv install --system --deploy
+COPY . ${PROJECT_DIR}/
+
