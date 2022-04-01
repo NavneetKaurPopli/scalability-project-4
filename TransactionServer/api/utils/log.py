@@ -4,6 +4,7 @@ from datetime import datetime
 from os import path
 import time
 import environ
+from bson.objectid import ObjectId
 
 # initialize the environment
 env = environ.Env()
@@ -23,28 +24,33 @@ def logRequest(view):
     def wrapper(request, **kwargs):
         if(not env('LOG')):
             return view(request)
-        timestamp = str(int(time.time()))	
-        # Get the username
-        # user = request.user.username
-        user = "6211857dc98b9aa98bf047a9" if env('HARD_CODED_USER') else request.user.id	
+        timestamp = str(int(time.time()*1000))	
         # Get the command name
-        command = request.path.split('/')[-1]	
+        command = request.path.split('/')[-2]	
         # Get the parameters	
         # Create the JSON
         json = {
         	'type': 'userCommand',
         	'timestamp': timestamp,
-        	'userid': user,
-        	'command': command,
+        	'command': command.upper(),
         	'server': 'transactionserver',
-        }	
-        json.update(request.GET.dict())
-        json.update(request.POST.dict())		
-        request.transactionId = dbCallWrapper(json, func = db.log.insert_one)
+        }
+        print(request.POST)
+        if request.method == 'POST' :
+
+            allParams = request.POST.dict()
+            request.data = allParams
+        else:
+            allParams = request.GET.dict()
+        print(allParams)
         
-        try:
-            return view(request, **kwargs)
-        except Exception as e:
-            return handleViewError(e, request)
+        json['username'] = allParams['username'] if 'username' in allParams.keys() else 'admin' 
+        if 'ticker' in allParams.keys():
+            json['stockSymbol'] = allParams['ticker']
+        objId = dbCallWrapper(json, func = db.log.insert_one)
+        request.transactionId = str(int(ObjectId(objId).binary.hex(), 16)) # cast to int
+        
+        return view(request, **kwargs)
+        
     return wrapper
 

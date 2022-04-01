@@ -1,8 +1,9 @@
 import socket
-from api.utils.log import *
+from api.utils.db import *
+import time
 import random
-
-def getQuote(ticker, userid, transactionId):
+db, client = getDb()
+def getQuote(ticker, user, request):
     #try:
     #    HOST = '192.168.4.2'
     #    PORT = 4444
@@ -35,17 +36,48 @@ def getQuote(ticker, userid, transactionId):
     #    }
     #except Exception as e:
         randomFloat = (random.uniform(0, 1) * 250) + 50
+        randomFloat = float(str(randomFloat).split('.')[0] +'.' + str(randomFloat).split('.')[1][:2])
         # generate random key
         from key_generator.key_generator import generate
-
-        key = generate(seed = randomFloat//1)
+        current_time = int(time.time() * 1000)
+        key = generate(seed = randomFloat//1).get_key()
+        quote = dbCallWrapper({"type": "quoteServer", "stockSymbol": ticker, 'timestamp': {"$gt": current_time - 60000}}, func = db.log.find_one)
+        if quote:
+            key = quote['cryptokey']
+            quote = quote['price']
+        
+        randomFloat = quote if quote else randomFloat
+        fetchType = 'quoteServer' if not quote else 'quote_cache'
+        if fetchType == 'quoteServer':
+            # print(user)
+            logJsonObject({
+                # QUOTE SERVER LOG 
+                'stockSymbol': ticker,
+                'price': randomFloat,
+                'username': user['username'],
+                'quoteServerTime': random.randint(1,5),
+                'timestamp': current_time,
+                'cryptokey': key,
+                'server': 'transactionserver',
+                'type': fetchType,
+            })
+        else:
+            logJsonObject({
+                # SYSTEM EVENT LOG FOR CACHE
+                'username': user['username'],
+                'timestamp': current_time,
+                'server': 'transactionserver',
+                'type': 'debugEvent',
+                'debugMessage': 'Quote Server Cache Hit for ' + ticker,
+                'command': 'QUOTE',
+                'stockSymbol': ticker,
+            })
         return {
             'ticker': ticker,
-            # random value from 50 to 300
             'price': randomFloat,
-            'username': userid,
-            'timestamp': str(int(time.time())),
-            'cryptographicKey': key.get_key(),
+            'username': user['username'],
+            'timestamp': current_time,
+            'cryptographicKey': key,
         }
 
 

@@ -1,29 +1,64 @@
-from api.utils.user import getTriggers, buyStock, sellStock, commitBuy, commitSell
-from utils.quoteServer import getQuote
-from api.utils.log import *
+from api.utils.user import getTriggers, buyStock, sellStock, commitBuy, commitSell, getUser
+from api.utils.quoteServer import getQuote
+from api.utils.db import logJsonObject, dbCallWrapper, getDb
 import time
+from bson.objectid import ObjectId
+
+db, client = getDb()
+
 def trigger_job():
     triggers = getTriggers()
-    sell_triggers = triggers['sell_triggers']
-    buy_triggers = triggers['buy_triggers']
-    transactionId = logJsonObject({'type': 'systemEvent', 'event': 'trigger_job', 'server': 'transactionserver', 'timestamp': str(int(time.time()))})
-    startTime = time.time()
+    
+    startTime = int(time.time() * 1000)  
+    
+    
+    
     triggers_executed = 0
-    for stock in buy_triggers:
-        quote = getQuote(stock)
-        if quote['price'] <= buy_triggers[stock]['price']:
-            buyStock(buy_triggers[stock]['userid'], buy_triggers[stock]['amount'], transactionId)
-            commitBuy(buy_triggers[stock]['userid'], stock, transactionId)
-            triggers_executed += 1
-    for stock in sell_triggers:
-        quote = getQuote(stock)
-        if quote['price'] >= sell_triggers[stock]['price']:
-            sellStock(sell_triggers[stock]['userid'], sell_triggers[stock]['amount'], transactionId)
-            commitSell(sell_triggers[stock]['userid'], stock, transactionId)
-            triggers_executed += 1
+    for trigger in triggers:
+        for stock in trigger['buy_triggers'].keys():
+            if not trigger['buy_triggers'][stock]:
+                continue
+            user = getUser(trigger['buy_triggers'][stock]['userid'])
+            quote = getQuote(stock, user, 'not needed right now')
+            if trigger['buy_triggers'][stock] and trigger['buy_triggers'][stock]['price'] > quote['price']:
+                objId = logJsonObject({'type': 'systemEvent', 'filename': 'trigger_job', 'server': 'transactionserver', 'timestamp': int(time.time() * 1000), 'stockSymbol': stock, 'username': trigger['buy_triggers'][stock]['userid'], 'command': 'BUY', 'funds': user['balance']})
+                
+                transactionId = str(int(ObjectId(objId).binary.hex(), 16))
+                try:
+                    user = getUser(trigger['buy_triggers'][stock]['userid'])
+                    buyStock(user, trigger['buy_triggers'][stock]['amount'], quote, transactionId)
+                    commitBuy(user, transactionId)
+                except:
+                    pass
 
-    logJsonObject({'type': 'systemevent', 'event': 'trigger_job_executed', 'activeTriggers': str(len(buy_triggers.keys()) + len(sell_triggers.keys())), 'triggers_executed': triggers_executed, 'time': str(time.time() - startTime) + ' seconds', 'transactionId': transactionId})
+                # remove trigger
+                dbCallWrapper({}, {'$set': {'buy_triggers.' + stock: None}}, func=db.user.update_one)
+
+                triggers_executed += 1
+        for stock in trigger['sell_triggers'].keys():
+            if not trigger['sell_triggers'][stock]:
+                continue
+            user = getUser(trigger['sell_triggers'][stock]['userid'])
+            quote = getQuote(stock, user, 'not used anymore')
+            if trigger['sell_triggers'][stock] and trigger['sell_triggers'][stock]['price'] < quote['price']:
+                objId = logJsonObject({'type': 'systemEvent', 'filename': 'trigger_job', 'server': 'transactionserver', 'timestamp': int(time.time() * 1000), 'stockSymbol': stock, 'username': trigger['sell_triggers'][stock]['userid'], 'command': 'SELL', 'funds': user['balance']})
+                
+                transactionId = str(int(ObjectId(objId).binary.hex(), 16))
+                
+                try:
+                    
+                    sellStock(user, trigger['sell_triggers'][stock]['amount'], quote, transactionId)
+                    commitSell(user, transactionId)
+                except:
+                    pass
+                dbCallWrapper({}, {'$set': {'sell_triggers.' + stock: None}}, func=db.user.update_one)
+                triggers_executed += 1
+            
+
+    
 
     return
 
 
+if __name__ == '__main__':
+    trigger_job()

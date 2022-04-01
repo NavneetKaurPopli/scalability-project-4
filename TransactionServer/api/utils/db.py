@@ -71,14 +71,26 @@ def dbCallWrapper(*args, **kwargs):
     else:
         eventLog = False
     dbfunc = kwargs['func']
-
+    if "except_on_not_found" in kwargs.keys():
+        except_on_not_found = kwargs['except_on_not_found']
+    else:
+        except_on_not_found = False
     queryResults = dbfunc(*args)
-    print(queryResults)
+    # print(queryResults)
     if isinstance(eventLog, dict):
         logJsonObject(eventLog)
     if queryResults:
 
         results = serializeDbResults(queryResults)
         return results
-    else:
+    elif except_on_not_found:
         raise Exception('Error: No results returned from database')
+    else:
+        return False
+
+def mongoZip(fields):
+    """
+    takes a list of fields and zips them into a dict with field name as key and 1 as value
+    """
+    return dict(zip(fields, [1]*len(fields)))
+
