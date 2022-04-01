@@ -12,7 +12,7 @@ services:
   api:
     build: .
     environment:
-      NODE_ENV: production
+      ENVIRONMENT: production
       DB_CONNECTION_STRING: mongodb://dta:8npqgJ1Pqo1PlO5ZYDeS8GARIP0gMkvgEKCNT2SrmhyzIv1jNJghm7glfbscMyivGnKXltGijeJMkX5Jg2qajQ==@dta.mongo.cosmos.azure.com:10255/?ssl=true&retrywrites=false&replicaSet=globaldb&maxIdleTimeMS=120000&appName=@dta@
       DB_CONNECTION_TYPE: CONNECTION_STRING
       DB_NAME: dta
