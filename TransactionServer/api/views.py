@@ -240,4 +240,3 @@ def getUserObj(request):
         return Response(user)
     except Exception as e:
         return handleViewError(e, request)
-

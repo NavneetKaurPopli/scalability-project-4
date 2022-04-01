@@ -16,6 +16,7 @@ import environ
 env = environ.Env()
 environ.Env.read_env()
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -24,11 +25,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-m$d4f(b3dm8t9jy8rh1^6kn9!7=z2w)^*c6itr&cxxhj%$$lwj'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
+CSRF_TRUSTED_ORIGINS = ['https://daytradingseng468.herokuapp.com']
 ALLOWED_HOSTS = []
 
 
@@ -134,11 +135,23 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'authentication.User'
+#REST_FRAMEWORK = {
+#    'EXCEPTION_HANDLER': 'AppServer.apps.core.exceptions.core_exception_handler',
+#    'NON_FIELD_ERRORS_KEY': 'error',
+    #'DEFAULT_AUTHENTICATION_CLASSES': (
+    #    'AppServer.apps.authentication.backends.JWTAuthentication',
+    #),
+   
+#}
+
 REST_FRAMEWORK = {
-    'EXCEPTION_HANDLER': 'AppServer.apps.core.exceptions.core_exception_handler',
-    'NON_FIELD_ERRORS_KEY': 'error',
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'AppServer.apps.authentication.backends.JWTAuthentication',
-    ),
+         # Global analysis configuration
+    'DEFAULT_PARSER_CLASSES': [
+                 'rest_framework.parsers.JSONParser', # Parse json packet
+                 'rest_framework.parsers.FormParser', # parse urlencoded packets
+                 'rest_framework.parsers.MultiPartParser' # parse from-data packet
+    ],
 }
 django_heroku.settings(locals())
+CSRF_COOKIE_SECURE=True
+SESSION_COOKIE_SECURE=True

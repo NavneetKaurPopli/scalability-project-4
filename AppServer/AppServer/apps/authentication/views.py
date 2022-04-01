@@ -3,14 +3,15 @@ from functools import partial
 from logging import raiseExceptions
 from pickle import TRUE
 from rest_framework import status
-from rest_framework.generics import RetrieveUpdateAPIView, RetrieveAPIView, UpdateAPIView
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.generics import RetrieveUpdateAPIView
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .renderers import UserJSONRenderer
 from .models import User
 import requests
 from .permissions.permissions import DumplogPermissions
+import json
 
 from .serializers import (
     LoginSerializer, 
@@ -19,7 +20,10 @@ from .serializers import (
     UsernameAmountStockSerializer, 
     UsernameSerializer,
     UsernameStockSerializer,
-    UsernameDumplogSerializer
+    UsernameDumplogSerializer,
+    UsernameAmountSerializer,
+    DumplogSerializer
+
 )
 
 
@@ -27,8 +31,8 @@ from .serializers import (
         #will be routed to mongo server
 
 class LoginAPIView(APIView):
-    permission_classes = (AllowAny,)
-    renderer_classes = (UserJSONRenderer,)
+    #permission_classes = (AllowAny,)
+    ##renderer_classes = (UserJSONRenderer,)
     serializer_class = LoginSerializer
 
     def post(self, request):
@@ -39,32 +43,36 @@ class LoginAPIView(APIView):
         # the registration endpoint. This is because we don't  have
         # anything to save. Instead, the `validate` method on our serializer
         # handles everything we need.
-        serializer = self.serializer_class(data=user)
-        serializer.is_valid(raise_exception=True)
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        #serializer = self.serializer_class(data=user)
+        #serializer.is_valid(raise_exception=True)
+        #r = requests.post('https://dta-transaction-server.herokuapp.com/api/create_user/', params=serializer.data)
+        return Response("response good", status=status.HTTP_200_OK)
 
 class RegistrationAPIView(APIView):
     # Allow any user (authenticated or not) to hit this endpoint.
-    permission_classes = (AllowAny,)
-    renderer_classes = (UserJSONRenderer,)
+    #permission_classes = (AllowAny,)
+    ##renderer_classes = (UserJSONRenderer,)
     serializer_class = RegistrationSerializer
 
     def post(self, request):
         user = request.data.get('user', {})
-
+        password = user['password']
+        username = user['username']
         # The create serializer, validate serializer, save serializer pattern
         # below is common and you will see it a lot throughout this course and
         # your own work later on. Get familiar with it.
-        serializer = self.serializer_class(data=user)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+       # serializer = self.serializer_class(data=user)
+        #serializer.is_valid(raise_exception=True)
+       # serializer.save()
+        #username = serializer.data['username']
+        #password = serializer.data['password']
+        data = {"username": username, "password": password, "name": username}
+        r = requests.post('https://dta-transaction-server.herokuapp.com/api/create_user/', data=data)
+        return Response("response good", status=status.HTTP_201_CREATED)
 
 class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
-    permission_classes = (IsAuthenticated,)
-    renderer_classes = (UserJSONRenderer,)
+    #permission_classes = (IsAuthenticated,)
+    #renderer_classes = (UserJSONRenderer,)
     serializer_class = UserSerializer
 
     def retrieve(self, request):
@@ -83,10 +91,6 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
 
         # Here is that serialize, validate, save pattern we talked about
         # before.
-        print("in api view for request data is ", request.data)
-        print("request user is: ", request.user)
-        print("retrieve user api view serializer_data is: ", serializer_data)
-        print("about to go into user serializer update function")
         serializer = self.serializer_class(
             request.user, 
             data=serializer_data, 
@@ -98,201 +102,261 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class AddAPIView(RetrieveUpdateAPIView):
-    permission_clases = (IsAuthenticated,)
-    renderer_classes = (UserJSONRenderer,)
-    serializer_class = UsernameAmountStockSerializer
+    #permission_classes = (IsAuthenticated,)
+    #renderer_classes = (UserJSONRenderer,)
+    serializer_class = UsernameAmountSerializer
 
     def post(self, request):
         user = request.data.get('user', {})
         serializer = self.serializer_class(data=user, partial=True)
         serializer.is_valid(raise_exception=True)
-        message = {"message": "add amount endpoint", "serializer_data":serializer.data}
+        r = requests.post('https://dta-transaction-server.herokuapp.com/api/add/', data=serializer.data)
+
+        message = {"message": "add amount endpoint", "serializer_data":serializer.data, "response from transaction": r.text}
         return Response(message, status=status.HTTP_200_OK)
 
 class QuoteAPIView(APIView):
-    permission_classes = (IsAuthenticated,)
-    renderer_classes = (UserJSONRenderer,)
+    #permission_classes = (IsAuthenticated,)
+    #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameStockSerializer
 
-    def retrieve(self, request):
+    def get(self, request):
         params = request.query_params
-        serializer = self.serializer_class(params)
+        serializer = self.serializer_class(data=params)
         serializer.is_valid(raise_exception=True)
-        message = {"message": "quote endpoint", "serializer_data": serializer.data}
+        r = requests.get('https://dta-transaction-server.herokuapp.com/api/quote/', params=serializer.data)
+        message = {"message": "quote endpoint", "serializer_data": serializer.data, "response from transaction": r.text}
         return Response(message, status=status.HTTP_200_OK)
 
 class BuyStockAPIView(APIView):
-    permission_clases = (IsAuthenticated,)
-    renderer_classes = (UserJSONRenderer,)
+    #permission_classes = (IsAuthenticated,)
+    #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameAmountStockSerializer
 
     def post(self, request):
         user = request.data.get('user', {})
-        serializer = self.serializer_class(data=user, partial=True)
+        print("here")
+        serializer = self.serializer_class(
+            data=user
+        )
         serializer.is_valid(raise_exception=True)
-        message = {"message": "buy stock endpoint", "serializer_data":serializer.data}
+        print("serializer data is: ", serializer.data)
+        r = requests.post(url='https://dta-transaction-server.herokuapp.com/api/buy/',  data=serializer.data)
+        message = {"message": "buy stock endpoint", "serializer_data":serializer.data, "response from transaction": r.text}
         return Response(message, status=status.HTTP_200_OK)
 
 class CommitBuyAPIView(APIView):
-    permission_clases = (IsAuthenticated,)
-    renderer_classes = (UserJSONRenderer,)
+    #permission_classes = (IsAuthenticated,)
+    #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameSerializer
 
     def post(self, request):
         user = request.data.get('user', {})
-        serializer = self.serializer_class(data=user)
+        serializer = self.serializer_class(
+            data=user
+        
+        )
         serializer.is_valid(raise_exception=True)
-        message = {"message": "commit buy endpoint", "serializer_data":serializer.data}
+        r = requests.post('https://dta-transaction-server.herokuapp.com/api/commit_buy/', data=serializer.data)
+        message = {"message": "commit buy endpoint", "serializer_data":serializer.data, "response from transaction": r.text}
         return Response(message, status=status.HTTP_200_OK)
 
 class CancelBuyAPIView(APIView):
-    permission_clases = (IsAuthenticated,)
-    renderer_classes = (UserJSONRenderer,)
+    #permission_classes = (IsAuthenticated,)
+    #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameSerializer
 
     def post(self, request):
         user = request.data.get('user', {})
-        serializer = self.serializer_class(data=user)
+        serializer = self.serializer_class(
+            data=user, 
+        )
         serializer.is_valid(raise_exception=True)
-        message = {"message": "cancel buy endpoint", "serializer_data":serializer.data}
+        r = requests.post('https://dta-transaction-server.herokuapp.com/api/cancel_buy/', data=serializer.data)
+        message = {"message": "cancel buy endpoint", "serializer_data":serializer.data, "response from transaction": r.text}
         return Response(message, status=status.HTTP_200_OK)
 
 class SellStockAPIView(APIView):
-    permission_clases = (IsAuthenticated,)
-    renderer_classes = (UserJSONRenderer,)
+    #permission_classes = (IsAuthenticated,)
+    #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameAmountStockSerializer
 
     def post(self, request):
         user = request.data.get('user', {})
-        serializer = self.serializer_class(data=user)
+        serializer = self.serializer_class(
+
+            data=user
+
+        )
+        
         serializer.is_valid(raise_exception=True)
-        message = {"message": "sell stock endpoint", "serializer_data":serializer.data}
+        r = requests.post('https://dta-transaction-server.herokuapp.com/api/sell/', data=serializer.data)
+        message = {"message": "sell stock endpoint", "serializer_data":serializer.data, "response from transaction": r.text}
         return Response(message, status=status.HTTP_200_OK)
 
 class CommitSellAPIView(APIView):
-    permission_clases = (IsAuthenticated,)
-    renderer_classes = (UserJSONRenderer,)
+    #permission_classes = (IsAuthenticated,)
+    #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameSerializer
 
     def post(self, request):
         user = request.data.get('user', {})
         serializer = self.serializer_class(data=user)
         serializer.is_valid(raise_exception=True)
-        message = {"message": "commit sell endpoint", "serializer_data":serializer.data}
+        r = requests.post('https://dta-transaction-server.herokuapp.com/api/commit_sell/', data=serializer.data)
+        message = {"message": "commit sell endpoint", "serializer_data":serializer.data, "response from transaction": r.text}
         return Response(message, status=status.HTTP_200_OK)
 
-class CancelSellAPIView(RetrieveAPIView):
-    permission_clases = (IsAuthenticated,)
-    renderer_classes = (UserJSONRenderer,)
+class CancelSellAPIView(APIView):
+    #permission_classes = (IsAuthenticated,)
+    #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameSerializer
 
     def post(self, request):
         user = request.data.get('user', {})
-        serializer = self.serializer_class(data=user)
+        serializer = self.serializer_class(
+            data=user
+        )
         serializer.is_valid(raise_exception=True)
-        message = {"message": "cancel sell endpoint", "serializer_data":serializer.data}
+        r = requests.post('https://dta-transaction-server.herokuapp.com/api/cancel_sell/', data=serializer.data)
+        message = {"message": "cancel sell endpoint", "serializer_data":serializer.data, "response from transaction": r.text}
         return Response(message, status=status.HTTP_200_OK)
 
-class SetBuyAmountAPIView(RetrieveAPIView):
-    permission_clases = (IsAuthenticated,)
-    renderer_classes = (UserJSONRenderer,)
+class SetBuyAmountAPIView(APIView):
+    #permission_classes = (IsAuthenticated,)
+    #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameAmountStockSerializer
 
     def post(self, request):
         user = request.data.get('user', {})
-        serializer = self.serializer_class(data=user)
+        serializer = self.serializer_class( 
+            data=user
+            
+        )
         serializer.is_valid(raise_exception=True)
-        message = {"message": "set buy amount endpoint", "serializer_data":serializer.data}
+        r = requests.post('https://dta-transaction-server.herokuapp.com/api/set_buy_amount/', data=serializer.data)
+        
+        message = {"message": "set buy amount endpoint", "serializer_data":serializer.data, "response from transaction": r.text}
         return Response(message, status=status.HTTP_200_OK)
 
-class CancelSetBuyAPIView(RetrieveAPIView):
-    permission_clases = (IsAuthenticated,)
-    renderer_classes = (UserJSONRenderer,)
-    serializer_class = UsernameAmountStockSerializer
-
-    def post(self, request):
-        user = request.data.get('user', {})
-        serializer = self.serializer_class(data=user)
-        serializer.is_valid(raise_exception=True)
-        message = {"message": "cancel set buy endpoint", "serializer_data":serializer.data}
-        return Response(message, status=status.HTTP_200_OK)
-
-class SetBuyTriggerAPIView(APIView):
-    permission_clases = (IsAuthenticated,)
-    renderer_classes = (UserJSONRenderer,)
-    serializer_class = UsernameAmountStockSerializer
-
-    def post(self, request):
-        user = request.data.get('user', {})
-        serializer = self.serializer_class(data=user)
-        serializer.is_valid(raise_exception=True)
-        message = {"message": "set buy trigger endpoint", "serializer_data":serializer.data}
-        return Response(message, status=status.HTTP_200_OK)
-
-class SetSellAmountAPIView(RetrieveAPIView):
-    permission_clases = (IsAuthenticated,)
-    renderer_classes = (UserJSONRenderer,)
-    serializer_class = UsernameAmountStockSerializer
-
-    def post(self, request):
-        user = request.data.get('user', {})
-        serializer = self.serializer_class(data=user)
-        serializer.is_valid(raise_exception=True)
-        message = {"message": "set sell amount endpoint", "serializer_data":serializer.data}
-        return Response(message, status=status.HTTP_200_OK)
-
-class SetSellTriggerAPIView(APIView):
-    permission_clases = (IsAuthenticated,)
-    renderer_classes = (UserJSONRenderer,)
-    serializer_class = UsernameAmountStockSerializer
-
-    def post(self, request):
-        user = request.data.get('user', {})
-        serializer = self.serializer_class(data=user)
-        serializer.is_valid(raise_exception=True)
-        message = {"message": "set sell trigger endpoint", "serializer_data":serializer.data}
-        return Response(message, status=status.HTTP_200_OK)
-
-class CancelSellSetAPIView(APIView):
-    permission_clases = (IsAuthenticated,)
-    renderer_classes = (UserJSONRenderer,)
+class CancelSetBuyAPIView(APIView):
+    #permission_classes = (IsAuthenticated,)
+    #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameStockSerializer
 
     def post(self, request):
         user = request.data.get('user', {})
-        serializer = self.serializer_class(data=user)
+        serializer = self.serializer_class(
+            data=user
+        )
         serializer.is_valid(raise_exception=True)
-        message = {"message": "set sell trigger endpoint", "serializer_data":serializer.data}
+        r = requests.post('https://dta-transaction-server.herokuapp.com/api/cancel_set_buy/', data=serializer.data)
+        
+        message = {"message": "cancel set buy endpoint", "serializer_data":serializer.data, "response from transaction": r.text}
+        return Response(message, status=status.HTTP_200_OK)
+
+class SetBuyTriggerAPIView(APIView):
+    #permission_classes = (IsAuthenticated,)
+    #renderer_classes = (UserJSONRenderer,)
+    serializer_class = UsernameAmountStockSerializer
+
+    def post(self, request):
+        user = request.data.get('user', {})
+        serializer = self.serializer_class( 
+            data=user
+        )
+        serializer.is_valid(raise_exception=True)
+        r = requests.post('https://dta-transaction-server.herokuapp.com/api/set_buy_trigger/', data=serializer.data)
+        
+        message = {"message": "set buy trigger endpoint", "serializer_data":serializer.data, "response from transaction": r.text}
+        return Response(message, status=status.HTTP_200_OK)
+
+class SetSellAmountAPIView(APIView):
+    #permission_classes = (IsAuthenticated,)
+    #renderer_classes = (UserJSONRenderer,)
+    serializer_class = UsernameAmountStockSerializer
+
+    def post(self, request):
+        user = request.data.get('user', {})
+        serializer = self.serializer_class(
+            data=user
+        )
+        serializer.is_valid(raise_exception=True)
+        r = requests.post('https://dta-transaction-server.herokuapp.com/api/set_sell_amount/', data=serializer.data)
+        
+        message = {"message": "set sell amount endpoint", "serializer_data":serializer.data, "response from transaction": r.text}
+        return Response(message, status=status.HTTP_200_OK)
+
+class SetSellTriggerAPIView(APIView):
+    #permission_classes = (IsAuthenticated,)
+    #renderer_classes = (UserJSONRenderer,)
+    serializer_class = UsernameAmountStockSerializer
+
+    def post(self, request):
+        user = request.data.get('user', {})
+        serializer = self.serializer_class(
+            data=user, 
+        )
+        serializer.is_valid(raise_exception=True)
+        r = requests.post('https://dta-transaction-server.herokuapp.com/api/set_sell_trigger/', data=serializer.data)
+        
+        message = {"message": "set sell trigger endpoint", "serializer_data":serializer.data, "response from transaction": r.text}
+        return Response(message, status=status.HTTP_200_OK)
+
+class CancelSetSellAPIView(APIView):
+    #permission_classes = (IsAuthenticated,)
+    #renderer_classes = (UserJSONRenderer,)
+    serializer_class = UsernameStockSerializer
+
+    def post(self, request):
+        user = request.data.get('user', {})
+        serializer = self.serializer_class(
+
+            data=user
+
+        )
+        serializer.is_valid(raise_exception=True)
+        r = requests.post('https://dta-transaction-server.herokuapp.com/api/cancel_set_sell/', data=serializer.data)
+        
+        message = {"message": "set sell trigger endpoint", "serializer_data":serializer.data, "response from transaction": r.text}
         return Response(message, status=status.HTTP_200_OK)
 
 #get probably
 class DumpLogAPIVeiw(APIView):
-    permission_clases = (DumplogPermissions,)
-    renderer_classes = (UserJSONRenderer,)
+    #permission_classes = (IsAuthenticated,)
+    #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameDumplogSerializer
 
-    def retrieve(self, request):
+    def get(self, request):
         params = request.query_params
-        serializer = self.serializer_class(params)
+        serializer = self.serializer_class(data=params)
         serializer.is_valid(raise_exception=True)
-        message = {"message": "dunmplog endpoint", "serializer_data": serializer.data}
-        return Response(message, status=status.HTTP_200_OK)
-    
-    def post(self, request):
-        user = request.data.get('user', {})
-        serializer = self.serializer_class(data=user)
-        serializer.is_valid(raise_exception=True)
-        message = {"message": "dump log for admin", "serializer_data":serializer.data}
+        r = requests.get('https://dta-transaction-server.herokuapp.com/api/dumplog/', params=serializer.data)
+        message = {"message": "dunmplog endpoint", "serializer_data": serializer.data, "response from transaction": r.text}
         return Response(message, status=status.HTTP_200_OK)
 
+class DumpLogAdminAPIVeiw(APIView):
+    #permission_classes = (IsAdminUser,)
+    #renderer_classes = (UserJSONRenderer,)
+    serializer_class = DumplogSerializer
+
+    def get(self, request):
+        params = request.query_params
+        serializer = self.serializer_class(data=params)
+        serializer.is_valid(raise_exception=True)
+        r = requests.get(url='https://dta-transaction-server.herokuapp.com/api/dumplog/', params=serializer.data)
+        message = {"message": "dunmplog endpoint", "serializer_data": serializer.data, "response from transaction": r.text}
+        return Response(message, status=status.HTTP_200_OK)
+    
 class DisplaySummary(APIView):
-    permission_clases = (IsAuthenticated,)
-    renderer_classes = (UserJSONRenderer,)
+    #permission_classes = (IsAuthenticated,)
+    #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameSerializer
     
-    def retreive(self, request):
-        user = request.data.query_params
+    def get(self, request):
+        user = request.query_params
         serializer = self.serializer_class(data=user)
         serializer.is_valid(raise_exception=True)
-        message = {"message": "set sell trigger endpoint", "serializer_data":serializer.data}
+        r = requests.get(url='https://dta-transaction-server.herokuapp.com/api/display_summary/', params=serializer.data)
+        message = {"message": "set sell trigger endpoint", "serializer_data":serializer.data, "response from transaction": r.text}
         return Response(message, status=status.HTTP_200_OK)

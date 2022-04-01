@@ -19,9 +19,10 @@ from .views import (
     SetBuyTriggerAPIView,
     SetSellAmountAPIView,
     SetSellTriggerAPIView,
-    CancelSellSetAPIView,
+    CancelSetSellAPIView,
     DumpLogAPIVeiw,
-    DisplaySummary
+    DisplaySummary,
+    DumpLogAdminAPIVeiw
     )
 
 app_name = 'authentication'
@@ -32,7 +33,7 @@ urlpatterns = [
     #DTA specific
     path('add/', AddAPIView.as_view()),
     path('quote', QuoteAPIView.as_view()),
-    path('buy/', BuyStockAPIView.as_view()),
+    path('buy', BuyStockAPIView.as_view()),
     path('commitbuy/', CommitBuyAPIView.as_view()),
     path('cancelbuy/', CancelBuyAPIView.as_view()),
     path('sell/', SellStockAPIView.as_view()),
@@ -43,8 +44,9 @@ urlpatterns = [
     path('setbuytrigger/', SetBuyTriggerAPIView.as_view()),
     path('setsellamount/', SetSellAmountAPIView.as_view()),
     path('setselltrigger/', SetSellTriggerAPIView.as_view()),
-    path('cancelsetsell/', CancelSellSetAPIView.as_view()),
+    path('cancelsetsell/', CancelSetSellAPIView.as_view()),
     path('dumplog', DumpLogAPIVeiw.as_view()),
-    path('displaysummary', DisplaySummary.as_view())
+    path('displaysummary', DisplaySummary.as_view()),
+    path('dumpnlogadmin', DumpLogAdminAPIVeiw.as_view()),
 
 ]
