@@ -19,7 +19,7 @@ services:
       SECRET_KEY: d0946e53d85e7a611ba84f813b7c8ee7269d1c2cbf5dec78a1d3636c25851865d5eed5b99d96fefe6da6f456c281f52ba11040cf921bdd1a281f94a9973bda77
       DEBUG: "True"
       LOG: "True"
-      HARD_CODE_USER: "True"
+      HARD_CODE_USER: "False"
     restart: always
   
   
