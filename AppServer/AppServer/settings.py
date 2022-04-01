@@ -16,8 +16,11 @@ import os
 
 env = environ.Env()
 environ.Env.read_env()
-import mongoengine
-mongoengine.connect(db=db_name, host=hostname, username=username, password=pwd)
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False)
+)
+
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -28,12 +31,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-m$d4f(b3dm8t9jy8rh1^6kn9!7=z2w)^*c6itr&cxxhj%$$lwj'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = ['.herokuapp.com', 'localhost', '.azurewebsites.net']
 
 
 # Application definition
@@ -96,10 +99,13 @@ WSGI_APPLICATION = 'AppServer.wsgi.application'
 DATABASES = {
         'default': {
             'ENGINE': 'djongo',
-            'NAME': 'your-db-name',
+            'NAME': 'dta',
             'ENFORCE_SCHEMA': False,
             'CLIENT': {
-                'host': DBHOST
+                'host': env('DB_HOST_URI')
+            },
+            'OPTIONS': {
+                'timeout': 1200
             }  
         }
 }

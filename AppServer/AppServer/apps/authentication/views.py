@@ -11,7 +11,9 @@ from .renderers import UserJSONRenderer
 from .models import User
 import requests
 from .permissions.permissions import DumplogPermissions
+
 import json
+
 
 from .serializers import (
     LoginSerializer, 
@@ -28,7 +30,6 @@ from .serializers import (
 
 
 
-        #will be routed to mongo server
 
 class LoginAPIView(APIView):
     permission_classes = (AllowAny,)
@@ -97,7 +98,7 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-class AddAPIView(RetrieveUpdateAPIView):
+class AddAPIView(APIView):
     permission_classes = (IsAuthenticated,)
     renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameAmountSerializer

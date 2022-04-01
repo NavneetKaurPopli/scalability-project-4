@@ -9,7 +9,7 @@ from django.contrib.auth import authenticate
 class UserSerializer(serializers.ModelSerializer):
     
     """Handles serialization and deserialization of User objects."""
-    amount =serializers.IntegerField(required=False)
+    
     # Passwords must be at least 8 characters, but no more than 128 
     # characters. These values are the default provided by Django. We could
     # change them, but that would create extra work while introducing no real
@@ -22,7 +22,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('email', 'username', 'password', 'token', 'balance', 'amount')
+        fields = ('email', 'username', 'password', 'token')
 
         # The `read_only_fields` option is an alternative for explicitly
         # specifying the field with `read_only=True` like we did for password
@@ -35,12 +35,6 @@ class UserSerializer(serializers.ModelSerializer):
     
     def update(self, instance, validated_data):
         """Performs an update on a User."""
-        print("in user update function")
-        print("USER UPDATE VALIDATE_DATA: ", validated_data)
-        print("User serializer update, instance is: ", instance)
-        #do a request to the transaction or mongodb server
-
-
         # Passwords should not be handled with `setattr`, unlike other fields.
         # Django provides a function that handles hashing and
         # salting passwords. That means
@@ -58,8 +52,7 @@ class UserSerializer(serializers.ModelSerializer):
             # `.set_password()`  handles all
             # of the security stuff that we shouldn't be concerned with.
             instance.set_password(password)
-        if amount is not None:
-            instance.balance = instance.balance + amount
+
         # After everything has been updated we must explicitly save
         # the model. It's worth pointing out that `.set_password()` does not
         # save the model.

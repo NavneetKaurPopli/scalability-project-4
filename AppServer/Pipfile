@@ -14,11 +14,9 @@ requests = "*"
 django-environ = "*"
 gunicorn = "*"
 django-heroku = "*"
-snappy = "*"
-gssapi = "*"
-srv = "*"
-tls = "*"
+pymongo = "==3.12.1"
 dnspython = "*"
+djongo = "*"
 mongoengine = "*"
 
 [requires]
