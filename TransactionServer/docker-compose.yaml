@@ -1,14 +1,14 @@
 version: '3.4'
 services:
-  nginx:
-    build:
-      context : ./nginx/
-      dockerfile: Nginx.Dockerfile
-    depends_on:
-      - api
-    ports:
-      - "5100:5100"
-    restart: always
+  # nginx:
+  #   build:
+  #     context : ./nginx/
+  #     dockerfile: Nginx.Dockerfile
+  #   depends_on:
+  #     - api
+  #   ports:
+  #     - "5100:5100"
+  #   restart: always
   api:
     build: .
     environment:
