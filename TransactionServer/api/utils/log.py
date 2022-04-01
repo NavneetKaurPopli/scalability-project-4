@@ -22,7 +22,8 @@ def logRequest(view):
     catches all exceptions and logs them
     """ 
     def wrapper(request, **kwargs):
-        if(not env('LOG')):
+        log = True if env('LOG') == 'True' else False
+        if(not log):
             return view(request)
         timestamp = str(int(time.time()*1000))	
         # Get the command name

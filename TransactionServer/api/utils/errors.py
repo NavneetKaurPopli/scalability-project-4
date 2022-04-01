@@ -25,8 +25,8 @@ def logError(exception, request, user):
     </errorEvent>
 
     """
-
-    if(not env('LOG')):
+    log = True if env('LOG') == 'True' else False
+    if(not log):
         return
 
     # Get the current timestamp
