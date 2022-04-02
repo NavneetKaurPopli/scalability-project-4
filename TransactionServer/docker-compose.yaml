@@ -1,16 +1,17 @@
 version: '3.4'
 services:
-  #nginx:
-  #  build:
-  #    context : ./nginx/
-  #    dockerfile: Nginx.Dockerfile
-  #  depends_on:
-  #    - api
-  #  ports:
-  #    - "5100:5100"
-  #  restart: always
+  nginx:
+    build:
+      context : ./nginx/
+      dockerfile: Nginx.Dockerfile
+    depends_on:
+      - api
+    ports:
+      - "5100:5100"
+    restart: always
   api:
     build: .
+    command: python manage.py runserver 127.0.0.1:8000
     environment:
       ENVIRONMENT: production
       DB_CONNECTION_STRING: mongodb://dta:8npqgJ1Pqo1PlO5ZYDeS8GARIP0gMkvgEKCNT2SrmhyzIv1jNJghm7glfbscMyivGnKXltGijeJMkX5Jg2qajQ==@dta.mongo.cosmos.azure.com:10255/?ssl=true&retrywrites=false&replicaSet=globaldb&maxIdleTimeMS=120000&appName=@dta@
@@ -20,7 +21,6 @@ services:
       DEBUG: "True"
       LOG: "True"
       HARD_CODE_USER: "False"
-    # command: python manage.py runserver
     restart: always
   
   
