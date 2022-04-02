@@ -20,8 +20,7 @@ services:
       DEBUG: "True"
       LOG: "True"
       HARD_CODE_USER: "False"
-    ports:
-      - "8000:8000"
+    command: python manage.py runserver
     restart: always
   
   

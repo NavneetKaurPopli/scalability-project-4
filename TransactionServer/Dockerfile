@@ -12,5 +12,3 @@ WORKDIR /code
 COPY Pipfile Pipfile.lock ${PROJECT_DIR}/
 
 RUN pipenv install --system --deploy
-
-CMD ["python", "./manage.py", "runserver"]
