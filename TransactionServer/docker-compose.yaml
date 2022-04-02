@@ -20,7 +20,7 @@ services:
       DEBUG: "True"
       LOG: "True"
       HARD_CODE_USER: "False"
-    command: python manage.py runserver
+    # command: python manage.py runserver
     restart: always
   
   
