@@ -83,7 +83,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'TransactionServer.wsgi.application'
 
-
+CONNECTION_STRING = env('DB_CONNECTION_STRING')
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
