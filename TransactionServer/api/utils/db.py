@@ -11,6 +11,7 @@ environ.Env.read_env()
 def getDb():
 
     if env('DB_CONNECTION_TYPE') == 'CONNECTION_STRING':
+        print(env('DB_CONNECTION_STRING'))
         return get_db_handle_connection_string(env('DB_NAME'), env('DB_CONNECTION_STRING'))
     
         
