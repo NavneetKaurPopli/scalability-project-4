@@ -21,6 +21,7 @@ services:
       - DEBUG="True"
       - LOG="True"
       - HARD_CODE_USER="False"
+      - DJANGO_ALLOWED_HOSTS=$DJANGO_ALLOWED_HOSTS
     restart: always
   
   
