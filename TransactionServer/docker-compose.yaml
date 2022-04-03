@@ -11,7 +11,7 @@ services:
     restart: always
   api:
     build: .
-    command: python manage.py runserver 127.0.0.1:8000
+    command: python ./manage.py runserver 127.0.0.1:8000
     environment:
       ENVIRONMENT: production
       DB_CONNECTION_STRING: mongodb://dta:8npqgJ1Pqo1PlO5ZYDeS8GARIP0gMkvgEKCNT2SrmhyzIv1jNJghm7glfbscMyivGnKXltGijeJMkX5Jg2qajQ==@dta.mongo.cosmos.azure.com:10255/?ssl=true&retrywrites=false&replicaSet=globaldb&maxIdleTimeMS=120000&appName=@dta@
