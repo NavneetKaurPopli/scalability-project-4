@@ -20,5 +20,3 @@ WORKDIR /code
 COPY Pipfile Pipfile.lock ${PROJECT_DIR}/
 
 RUN pipenv install --system --deploy
-
-ENTRYPOINT ["bash","entrypoint.prod.sh"]
