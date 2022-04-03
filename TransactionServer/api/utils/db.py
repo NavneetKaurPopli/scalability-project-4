@@ -54,7 +54,7 @@ def logJsonObject(json):
     Logs a json object.
     to the database log collection
     """
-    log = True if env('LOG') == 'True' else False
+    log =  env('LOG') == 'True' or env('LOG') == True
     if(not log):
         return
     db, client = getDb()

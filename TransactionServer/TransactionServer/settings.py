@@ -29,8 +29,8 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True if env('DEBUG') == 'True' else False 
-print(DEBUG)
+DEBUG = env('DEBUG') == 'True' or env('DEBUG') == True 
+
 ALLOWED_HOSTS = env("DJANGO_ALLOWED_HOSTS").split(" ")
 
 

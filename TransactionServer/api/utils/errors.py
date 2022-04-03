@@ -25,7 +25,7 @@ def logError(exception, request, user):
     </errorEvent>
 
     """
-    log = True if env('LOG') == 'True' else False
+    log = env('LOG') == 'True' or env('LOG') == True 
     if(not log):
         return
 

@@ -22,7 +22,7 @@ def logRequest(view):
     catches all exceptions and logs them
     """ 
     def wrapper(request, **kwargs):
-        log = True if env('LOG') == 'True' else False
+        log = env('LOG') == 'True' or env('LOG') == True
         if(not log):
             return view(request)
         timestamp = str(int(time.time()*1000))	
