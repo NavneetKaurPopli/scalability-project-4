@@ -15,6 +15,7 @@ mango-jwt = "*"
 django-crontab = "*"
 key-generator = "*"
 django-heroku = "*"
+gunicorn = "*"
 
 [dev-packages]
 
