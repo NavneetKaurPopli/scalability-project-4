@@ -16,7 +16,6 @@ django-crontab = "*"
 key-generator = "*"
 django-heroku = "*"
 gunicorn = "*"
-gevent = "*"
 
 [dev-packages]
 
