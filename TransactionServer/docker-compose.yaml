@@ -9,6 +9,12 @@ services:
     ports:
       - "5100:5100"
     restart: always
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+    restart: always
+    command: redis-server
   api:
     build: .
     command: python -m gunicorn TransactionServer.wsgi:application --bind 0.0.0.0:8000
