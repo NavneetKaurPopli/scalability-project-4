@@ -3,6 +3,8 @@ from utils import get_db_handle, get_db_handle_connection_string
 from bson.objectid import ObjectId
 from pymongo.results import InsertOneResult, UpdateResult, DeleteResult
 from pymongo.cursor import Cursor
+from gevent import monkey
+monkey.patch_all()
 
 env = environ.Env()
 
