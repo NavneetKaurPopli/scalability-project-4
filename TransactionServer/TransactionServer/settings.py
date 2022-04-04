@@ -12,11 +12,18 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 import environ
 import os
-
+import requests
 env = environ.Env(
     # set casting, default value
     DEBUG=(bool, False)
 )
+
+# test to see if we can send a request to google
+try:
+    requests.get('http://www.google.com')
+except requests.ConnectionError:
+    raise RuntimeError('Cannot connect to the internet. Please check your connection and try again.')
+    
 
 # Set the project base directory
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

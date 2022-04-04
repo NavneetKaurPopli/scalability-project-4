@@ -16,6 +16,7 @@ key-generator = "*"
 django-heroku = "*"
 gunicorn = "*"
 pymongo = "*"
+requests = "*"
 
 [dev-packages]
 
