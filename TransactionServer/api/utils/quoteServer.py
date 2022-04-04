@@ -1,84 +1,79 @@
 import socket
 from api.utils.db import *
-import time
+import datetime
 import random
+import redis
+import json
+import os
+class QuoteNotAvailableError(Exception):
+    pass
+
 db, client = getDb()
 def getQuote(ticker, user, request):
-    #try:
-    #    HOST = '192.168.4.2'
-    #    PORT = 4444
-    #    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-    #        try:
-    #            sock.connect((HOST, PORT))
-    #        except socket.error as err:
-    #            print('Error connecting to server: {}'.format(err))
-#
-    #        sock.sendall(ticker.encode()+ b' ' + userid.encode() + b'\n')
-    #        data = sock.recv(1024)
-    #    decodedData = data.decode().split(',')
-#
-    #    logJsonObject({
-    #        'ticker': ticker,
-    #        'price': decodedData[0],
-    #        'username': decodedData[1],
-    #        'timestamp': decodedData[2],
-    #        'cryptographicKey': decodedData[3],
-    #        'type': 'quoteServer',
-    #        'transactionId': transactionId
-    #    })
-#
-    #    return {
-    #        'ticker': ticker,
-    #        'price': decodedData[0],
-    #        'username': decodedData[1],
-    #        'timestamp': decodedData[2],
-    #        'cryptographicKey': decodedData[3]
-    #    }
-    #except Exception as e:
-        randomFloat = (random.uniform(0, 1) * 250) + 50
-        randomFloat = float(str(randomFloat).split('.')[0] +'.' + str(randomFloat).split('.')[1][:2])
-        # generate random key
-        from key_generator.key_generator import generate
-        current_time = int(time.time() * 1000)
-        key = generate(seed = randomFloat//1).get_key()
-        quote = dbCallWrapper({"type": "quoteServer", "stockSymbol": ticker, 'timestamp': {"$gt": current_time - 60000}}, func = db.log.find_one)
-        if quote:
-            key = quote['cryptokey']
-            quote = quote['price']
-        
-        randomFloat = quote if quote else randomFloat
-        fetchType = 'quoteServer' if not quote else 'quote_cache'
-        if fetchType == 'quoteServer':
-            # print(user)
-            logJsonObject({
-                # QUOTE SERVER LOG 
-                'stockSymbol': ticker,
-                'price': randomFloat,
-                'username': user['username'],
-                'quoteServerTime': random.randint(1,5),
-                'timestamp': current_time,
-                'cryptokey': key,
-                'server': 'transactionserver',
-                'type': fetchType,
-            })
-        else:
+    
+        starttime = datetime.datetime.now()
+        HOST = '192.168.4.2'
+        PORT = 4444
+       
+        r = redis.Redis(host='localhost', port=6379, db=0)
+
+        if r.exists(ticker):
+            quote = json.loads(r.get(ticker))
             logJsonObject({
                 # SYSTEM EVENT LOG FOR CACHE
                 'username': user['username'],
-                'timestamp': current_time,
-                'server': 'transactionserver',
+                'timestamp': int(round(datetime.datetime.now().timestamp() * 1000)),
+                'server': 'transactionserver: ' + socket.gethostname(),
                 'type': 'debugEvent',
-                'debugMessage': 'Quote Server Cache Hit for ' + ticker,
+                'debugMessage': 'Cache Hit for ' + ticker,
                 'command': 'QUOTE',
                 'stockSymbol': ticker,
             })
-        return {
-            'ticker': ticker,
-            'price': randomFloat,
-            'username': user['username'],
-            'timestamp': current_time,
-            'cryptographicKey': key,
-        }
+            return {
+                'ticker': ticker,
+                'user': user['username'],
+                'timestamp': quote['timestamp'],
+                'price': quote['price'],
+                'cryptokey': quote['cryptokey'],
+            }
+        else:
+            
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+
+                try:
+                    sock.connect((HOST, PORT))
+                    sock.sendall(ticker.encode()+ b' ' + user['username'].encode() + b'\n')
+                    data = sock.recv(1024)
+                    decodedData = data.decode().split(',')
+                    logJsonObject({
+                        # QUOTE SERVER LOG 
+                        'stockSymbol': ticker,
+                        'price': decodedData[0],
+                        'username': user['username'],
+                        'quoteServerTime': (datetime.datetime.now() - starttime).total_seconds(),
+                        'timestamp': int(round(datetime.datetime.now().timestamp() * 1000)),
+                        'cryptokey': decodedData[3],
+                        'server': 'transactionserver: ' + socket.gethostname(),
+                        'type': 'quoteServer',
+                    })
+
+                    r.set(ticker, json.dumps({
+                        'timestamp': int(round(datetime.datetime.now().timestamp() * 1000)),
+                        'price': decodedData[0],
+                        'cryptokey': decodedData[3],
+                    }), ex=60)
+
+                    return {
+                        'ticker': ticker,
+                        'price': decodedData[0],
+                        'username': user['username'],
+                        'timestamp': decodedData[2],
+                        'cryptographicKey': decodedData[3]
+                    }
+                except socket.error as err:
+                    raise QuoteNotAvailableError('Error connecting to server: {}'.format(err))
+
+        
 
 
 

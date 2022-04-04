@@ -17,6 +17,7 @@ django-heroku = "*"
 gunicorn = "*"
 pymongo = "*"
 requests = "*"
+redis = "*"
 
 [dev-packages]
 
