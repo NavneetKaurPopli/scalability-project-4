@@ -24,7 +24,7 @@ def logRequest(view):
     def wrapper(request, **kwargs):
         log = env('LOG') == 'True' or env('LOG') == True
         if(not log):
-            return view(request)
+            return view(request, **kwargs)
         timestamp = str(int(time.time()*1000))	
         # Get the command name
         command = request.path.split('/')[-2]	
