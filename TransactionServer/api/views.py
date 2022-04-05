@@ -8,10 +8,11 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
-from api.utils.log import logRequest
+from api.utils.decorators import logRequest, auth
 from api.utils.db import mongoZip
 import json 
 
+@auth
 @logRequest
 @api_view(['GET'])
 def quote(request, **kwargs):
@@ -30,6 +31,7 @@ def quote(request, **kwargs):
     except Exception as e:
         return handleViewError(e, request, user)
 
+@auth
 @csrf_exempt
 @logRequest
 @api_view(['POST', 'PATCH'])
@@ -45,6 +47,7 @@ def add(request):
     except Exception as e:
         return handleViewError(e, request, user)
 
+@auth
 @csrf_exempt               
 @logRequest
 @api_view(['POST'])
@@ -64,6 +67,7 @@ def buy(request):
     except Exception as e:
         return handleViewError(e, request, user)
 
+@auth
 @csrf_exempt
 @logRequest
 @api_view(['POST','PATCH'])
@@ -76,7 +80,7 @@ def commit_buy(request):
     except Exception as e:
         return handleViewError(e, request, user)
          
-
+@auth
 @csrf_exempt
 @logRequest
 @api_view(['POST'])
@@ -88,6 +92,7 @@ def cancel_buy(request):
     except Exception as e:
         return handleViewError(e, request, user)
 
+@auth
 @csrf_exempt
 @logRequest
 @api_view(['POST'])
@@ -100,6 +105,8 @@ def sell(request):
         return Response(sellStock(user, amount, getQuote(ticker, user, request.transactionId), request.transactionId))
     except Exception as e:
         return handleViewError(e, request, user)
+
+@auth
 @csrf_exempt
 @logRequest
 @api_view(['POST'])
@@ -110,6 +117,8 @@ def commit_sell(request):
         return Response(commitSell(user, request.transactionId))
     except Exception as e:
         return handleViewError(e, request, user)
+
+@auth
 @csrf_exempt
 @logRequest
 @api_view(['POST'])
@@ -121,6 +130,7 @@ def cancel_sell(request):
     except Exception as e:
         return handleViewError(e, request, user)
 
+@auth
 @csrf_exempt
 @logRequest
 @api_view(['POST'])
@@ -133,6 +143,8 @@ def set_buy_amount(request):
         return Response(setBuyAmount(user, ticker,amount, request.transactionId))
     except Exception as e:
         return handleViewError(e, request, user)
+
+@auth
 @csrf_exempt
 @logRequest
 @api_view(['POST'])
@@ -145,6 +157,7 @@ def cancel_set_buy(request):
     except Exception as e:
         return handleViewError(e, request, user)
 
+@auth
 @csrf_exempt
 @logRequest
 @api_view(['POST'])
@@ -157,6 +170,8 @@ def set_buy_trigger(request):
         return Response(setBuyTrigger(user, ticker, price,request.transactionId))
     except Exception as e:
         return handleViewError(e, request, user)
+
+@auth
 @csrf_exempt
 @logRequest
 @api_view(['POST'])
@@ -169,6 +184,8 @@ def set_sell_amount(request):
         return Response(setSellAmount(user, ticker, amount, request.transactionId))
     except Exception as e:
         return handleViewError(e, request, user)
+
+@auth
 @csrf_exempt
 @logRequest
 @api_view(['POST'])
@@ -181,6 +198,8 @@ def set_sell_trigger(request):
         return Response(setSellTrigger(user, ticker, price, request.transactionId))
     except Exception as e:
         return handleViewError(e, request, user)
+
+@auth
 @csrf_exempt
 @logRequest
 @api_view(['POST'])
@@ -192,6 +211,8 @@ def cancel_set_sell(request):
         return Response(cancelSellTrigger(user, ticker,request.transactionId))
     except Exception as e:
         return handleViewError(e, request, user)
+
+@auth
 @logRequest
 @api_view(['GET'])
 def dumplog(request):
@@ -203,7 +224,7 @@ def dumplog(request):
     except Exception as e:
         return handleViewError(e, request, user)
     
-
+@auth
 @logRequest
 @api_view(['GET'])
 def displaySummary(request):  
@@ -214,7 +235,7 @@ def displaySummary(request):
     except Exception as e:
         return handleViewError(e, request, user)
     
-
+@auth
 @csrf_exempt
 @api_view(['POST'])
 def createNewUser(request):
@@ -231,6 +252,7 @@ def createNewUser(request):
         
     #    return Response(e)
 
+@auth
 @api_view(['GET'])
 def getUserObj(request):
     try:

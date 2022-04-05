@@ -55,3 +55,13 @@ def logRequest(view):
         
     return wrapper
 
+def auth(view):
+    """
+    Authenticates the user.
+    """
+    def wrapper(request, **kwargs):
+        if request.headers.get('Authorization') == env('SECRET_KEY') or env('ENVIRONMENT') == 'development':
+            return view(request, **kwargs)
+        else:
+            return handleViewError(Exception('Unauthorized'), request, 401)
+    return wrapper
