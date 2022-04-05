@@ -16,8 +16,8 @@ import os
 
 env = environ.Env()
 environ.Env.read_env()
-import mongoengine
-mongoengine.connect(db=db_name, host=hostname, username=username, password=pwd)
+
+
 
 
 
@@ -87,23 +87,26 @@ WSGI_APPLICATION = 'AppServer.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
 DATABASES = {
-        'default': {
-            'ENGINE': 'djongo',
-            'NAME': 'your-db-name',
-            'ENFORCE_SCHEMA': False,
-            'CLIENT': {
-                'host': DBHOST
-            }  
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+        'OPTIONS': {
+                'timeout': 1200
         }
+    }
 }
+
+# DATABASES = {
+#         'default': {
+#             'ENGINE': 'djongo',
+#             'NAME': 'your-db-name',
+#             'ENFORCE_SCHEMA': False,
+#             'CLIENT': {
+#                 'host': DBHOST
+#             }  
+#         }
+# }
 
 
 # Password validation
