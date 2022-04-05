@@ -11,8 +11,13 @@ from .renderers import UserJSONRenderer
 from .models import User
 import requests
 from .permissions.permissions import DumplogPermissions
-
+import environ
 import json
+env = environ.Env()
+environ.Env.read_env()
+
+ts_secret = env('TRANSACTION_SERVER_SECRET_ID')
+ts_header = {"Authorization":ts_secret }
 
 
 from .serializers import (
@@ -121,7 +126,7 @@ class QuoteAPIView(APIView):
         params = request.query_params
         serializer = self.serializer_class(data=params)
         serializer.is_valid(raise_exception=True)
-        r = requests.get('https://dta-transaction-server.herokuapp.com/api/quote/', params=serializer.data)
+        r = requests.get('https://dta-transaction-server.herokuapp.com/api/quote/', params=serializer.data, headers=)
         message = {"message": "quote endpoint", "serializer_data": serializer.data, "response from transaction": r.text}
         return Response(message, status=status.HTTP_200_OK)
 
