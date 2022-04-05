@@ -4,6 +4,7 @@ from bson.objectid import ObjectId
 from pymongo.results import InsertOneResult, UpdateResult, DeleteResult
 from pymongo.cursor import Cursor
 
+
 env = environ.Env()
 
 environ.Env.read_env()
@@ -11,6 +12,7 @@ environ.Env.read_env()
 def getDb():
 
     if env('DB_CONNECTION_TYPE') == 'CONNECTION_STRING':
+        print(env('DB_CONNECTION_STRING'))
         return get_db_handle_connection_string(env('DB_NAME'), env('DB_CONNECTION_STRING'))
     
         
@@ -54,7 +56,8 @@ def logJsonObject(json):
     Logs a json object.
     to the database log collection
     """
-    if(not env('LOG')):
+    log =  env('LOG') == 'True' or env('LOG') == True
+    if(not log):
         return
     db, client = getDb()
     
@@ -76,7 +79,7 @@ def dbCallWrapper(*args, **kwargs):
     else:
         except_on_not_found = False
     queryResults = dbfunc(*args)
-    print(queryResults)
+    # print(queryResults)
     if isinstance(eventLog, dict):
         logJsonObject(eventLog)
     if queryResults:
@@ -87,3 +90,10 @@ def dbCallWrapper(*args, **kwargs):
         raise Exception('Error: No results returned from database')
     else:
         return False
+
+def mongoZip(fields):
+    """
+    takes a list of fields and zips them into a dict with field name as key and 1 as value
+    """
+    return dict(zip(fields, [1]*len(fields)))
+

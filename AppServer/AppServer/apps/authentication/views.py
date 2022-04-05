@@ -31,8 +31,8 @@ from .serializers import (
         #will be routed to mongo server
 
 class LoginAPIView(APIView):
-    permission_classes = (AllowAny,)
-    renderer_classes = (UserJSONRenderer,)
+    #permission_classes = (AllowAny,)
+    ##renderer_classes = (UserJSONRenderer,)
     serializer_class = LoginSerializer
 
     def post(self, request):
@@ -43,32 +43,36 @@ class LoginAPIView(APIView):
         # the registration endpoint. This is because we don't  have
         # anything to save. Instead, the `validate` method on our serializer
         # handles everything we need.
-        serializer = self.serializer_class(data=user)
-        serializer.is_valid(raise_exception=True)
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        #serializer = self.serializer_class(data=user)
+        #serializer.is_valid(raise_exception=True)
+        #r = requests.post('https://dta-transaction-server.herokuapp.com/api/create_user/', params=serializer.data)
+        return Response("response good", status=status.HTTP_200_OK)
 
 class RegistrationAPIView(APIView):
     # Allow any user (authenticated or not) to hit this endpoint.
-    permission_classes = (AllowAny,)
-    renderer_classes = (UserJSONRenderer,)
+    #permission_classes = (AllowAny,)
+    ##renderer_classes = (UserJSONRenderer,)
     serializer_class = RegistrationSerializer
 
     def post(self, request):
         user = request.data.get('user', {})
-
+        password = user['password']
+        username = user['username']
         # The create serializer, validate serializer, save serializer pattern
         # below is common and you will see it a lot throughout this course and
         # your own work later on. Get familiar with it.
-        serializer = self.serializer_class(data=user)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+       # serializer = self.serializer_class(data=user)
+        #serializer.is_valid(raise_exception=True)
+       # serializer.save()
+        #username = serializer.data['username']
+        #password = serializer.data['password']
+        data = {"username": username, "password": password, "name": username}
+        r = requests.post('https://dta-transaction-server.herokuapp.com/api/create_user/', data=data)
+        return Response("response good", status=status.HTTP_201_CREATED)
 
 class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
-    permission_classes = (IsAuthenticated,)
-    renderer_classes = (UserJSONRenderer,)
+    #permission_classes = (IsAuthenticated,)
+    #renderer_classes = (UserJSONRenderer,)
     serializer_class = UserSerializer
 
     def retrieve(self, request):
@@ -98,22 +102,22 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class AddAPIView(RetrieveUpdateAPIView):
-    permission_classes = (IsAuthenticated,)
-    renderer_classes = (UserJSONRenderer,)
+    #permission_classes = (IsAuthenticated,)
+    #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameAmountSerializer
 
     def post(self, request):
         user = request.data.get('user', {})
         serializer = self.serializer_class(data=user, partial=True)
         serializer.is_valid(raise_exception=True)
-        r = requests.post('https://dta-transaction-server.herokuapp.com/api/add/', params=serializer.data)
+        r = requests.post('https://dta-transaction-server.herokuapp.com/api/add/', data=serializer.data)
 
         message = {"message": "add amount endpoint", "serializer_data":serializer.data, "response from transaction": r.text}
         return Response(message, status=status.HTTP_200_OK)
 
 class QuoteAPIView(APIView):
-    permission_classes = (IsAuthenticated,)
-    renderer_classes = (UserJSONRenderer,)
+    #permission_classes = (IsAuthenticated,)
+    #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameStockSerializer
 
     def get(self, request):
@@ -125,24 +129,25 @@ class QuoteAPIView(APIView):
         return Response(message, status=status.HTTP_200_OK)
 
 class BuyStockAPIView(APIView):
-    permission_classes = (IsAuthenticated,)
-    renderer_classes = (UserJSONRenderer,)
+    #permission_classes = (IsAuthenticated,)
+    #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameAmountStockSerializer
 
     def post(self, request):
         user = request.data.get('user', {})
+        print("here")
         serializer = self.serializer_class(
             data=user
-        
         )
         serializer.is_valid(raise_exception=True)
+        print("serializer data is: ", serializer.data)
         r = requests.post(url='https://dta-transaction-server.herokuapp.com/api/buy/',  data=serializer.data)
         message = {"message": "buy stock endpoint", "serializer_data":serializer.data, "response from transaction": r.text}
         return Response(message, status=status.HTTP_200_OK)
 
 class CommitBuyAPIView(APIView):
-    permission_classes = (IsAuthenticated,)
-    renderer_classes = (UserJSONRenderer,)
+    #permission_classes = (IsAuthenticated,)
+    #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameSerializer
 
     def post(self, request):
@@ -157,8 +162,8 @@ class CommitBuyAPIView(APIView):
         return Response(message, status=status.HTTP_200_OK)
 
 class CancelBuyAPIView(APIView):
-    permission_classes = (IsAuthenticated,)
-    renderer_classes = (UserJSONRenderer,)
+    #permission_classes = (IsAuthenticated,)
+    #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameSerializer
 
     def post(self, request):
@@ -172,8 +177,8 @@ class CancelBuyAPIView(APIView):
         return Response(message, status=status.HTTP_200_OK)
 
 class SellStockAPIView(APIView):
-    permission_classes = (IsAuthenticated,)
-    renderer_classes = (UserJSONRenderer,)
+    #permission_classes = (IsAuthenticated,)
+    #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameAmountStockSerializer
 
     def post(self, request):
@@ -190,8 +195,8 @@ class SellStockAPIView(APIView):
         return Response(message, status=status.HTTP_200_OK)
 
 class CommitSellAPIView(APIView):
-    permission_classes = (IsAuthenticated,)
-    renderer_classes = (UserJSONRenderer,)
+    #permission_classes = (IsAuthenticated,)
+    #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameSerializer
 
     def post(self, request):
@@ -203,8 +208,8 @@ class CommitSellAPIView(APIView):
         return Response(message, status=status.HTTP_200_OK)
 
 class CancelSellAPIView(APIView):
-    permission_classes = (IsAuthenticated,)
-    renderer_classes = (UserJSONRenderer,)
+    #permission_classes = (IsAuthenticated,)
+    #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameSerializer
 
     def post(self, request):
@@ -218,8 +223,8 @@ class CancelSellAPIView(APIView):
         return Response(message, status=status.HTTP_200_OK)
 
 class SetBuyAmountAPIView(APIView):
-    permission_classes = (IsAuthenticated,)
-    renderer_classes = (UserJSONRenderer,)
+    #permission_classes = (IsAuthenticated,)
+    #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameAmountStockSerializer
 
     def post(self, request):
@@ -235,8 +240,8 @@ class SetBuyAmountAPIView(APIView):
         return Response(message, status=status.HTTP_200_OK)
 
 class CancelSetBuyAPIView(APIView):
-    permission_classes = (IsAuthenticated,)
-    renderer_classes = (UserJSONRenderer,)
+    #permission_classes = (IsAuthenticated,)
+    #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameStockSerializer
 
     def post(self, request):
@@ -251,8 +256,8 @@ class CancelSetBuyAPIView(APIView):
         return Response(message, status=status.HTTP_200_OK)
 
 class SetBuyTriggerAPIView(APIView):
-    permission_classes = (IsAuthenticated,)
-    renderer_classes = (UserJSONRenderer,)
+    #permission_classes = (IsAuthenticated,)
+    #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameAmountStockSerializer
 
     def post(self, request):
@@ -267,8 +272,8 @@ class SetBuyTriggerAPIView(APIView):
         return Response(message, status=status.HTTP_200_OK)
 
 class SetSellAmountAPIView(APIView):
-    permission_classes = (IsAuthenticated,)
-    renderer_classes = (UserJSONRenderer,)
+    #permission_classes = (IsAuthenticated,)
+    #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameAmountStockSerializer
 
     def post(self, request):
@@ -283,8 +288,8 @@ class SetSellAmountAPIView(APIView):
         return Response(message, status=status.HTTP_200_OK)
 
 class SetSellTriggerAPIView(APIView):
-    permission_classes = (IsAuthenticated,)
-    renderer_classes = (UserJSONRenderer,)
+    #permission_classes = (IsAuthenticated,)
+    #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameAmountStockSerializer
 
     def post(self, request):
@@ -299,8 +304,8 @@ class SetSellTriggerAPIView(APIView):
         return Response(message, status=status.HTTP_200_OK)
 
 class CancelSetSellAPIView(APIView):
-    permission_classes = (IsAuthenticated,)
-    renderer_classes = (UserJSONRenderer,)
+    #permission_classes = (IsAuthenticated,)
+    #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameStockSerializer
 
     def post(self, request):
@@ -318,8 +323,8 @@ class CancelSetSellAPIView(APIView):
 
 #get probably
 class DumpLogAPIVeiw(APIView):
-    permission_classes = (IsAuthenticated,)
-    renderer_classes = (UserJSONRenderer,)
+    #permission_classes = (IsAuthenticated,)
+    #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameDumplogSerializer
 
     def get(self, request):
@@ -331,8 +336,8 @@ class DumpLogAPIVeiw(APIView):
         return Response(message, status=status.HTTP_200_OK)
 
 class DumpLogAdminAPIVeiw(APIView):
-    permission_classes = (IsAdminUser,)
-    renderer_classes = (UserJSONRenderer,)
+    #permission_classes = (IsAdminUser,)
+    #renderer_classes = (UserJSONRenderer,)
     serializer_class = DumplogSerializer
 
     def get(self, request):
@@ -344,8 +349,8 @@ class DumpLogAdminAPIVeiw(APIView):
         return Response(message, status=status.HTTP_200_OK)
     
 class DisplaySummary(APIView):
-    permission_classes = (IsAuthenticated,)
-    renderer_classes = (UserJSONRenderer,)
+    #permission_classes = (IsAuthenticated,)
+    #renderer_classes = (UserJSONRenderer,)
     serializer_class = UsernameSerializer
     
     def get(self, request):

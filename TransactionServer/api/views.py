@@ -8,12 +8,16 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
-from api.utils.log import logRequest
+from api.utils.decorators import logRequest, auth
+from api.utils.db import mongoZip
+import json 
 
+@auth
 @logRequest
 @api_view(['GET'])
 def quote(request, **kwargs):
-    username = "test"
+    username = request.GET.get('username')
+    user = getUser(username, mongoZip(['username', 'balance']))
     # TODO: redis this, then have the buy and sell commands use the redis cache before hitting the quote server
     ticker = kwargs.get('ticker')
     if ticker is None:
@@ -23,197 +27,238 @@ def quote(request, **kwargs):
             raise Exception('No ticker specified')
     
         
-        return Response(getQuote(ticker, username,request.transactionId))
+        return Response(getQuote(ticker, user,request.transactionId))
     except Exception as e:
-        return handleViewError(e, request)
+        return handleViewError(e, request, user)
 
+@auth
 @csrf_exempt
 @logRequest
 @api_view(['POST', 'PATCH'])
 def add(request):
      
     
-    username = "test"
+    username = request.data.get('username')
+    user = getUser(username, mongoZip(['username', 'balance']))
     amount = request.data.get('amount', False) 
+    
     try:
-        return Response(addBalance(username, amount, request.transactionId))
+        return Response(addBalance(user, amount, request.transactionId))
     except Exception as e:
-        return handleViewError(e, request)
+        return handleViewError(e, request, user)
 
+@auth
 @csrf_exempt               
 @logRequest
 @api_view(['POST'])
 def buy(request):
-    username = "test"
+    username = request.data.get('username')
+    user = getUser(username, mongoZip(['username', 'balance']))
     ticker = request.data.get('ticker', False)
     amount = request.data.get('amount', False)
+    # print(ticker, amount, username)
     try: 
         if ticker == False: 
             raise Exception('No ticker specified')
         if amount == False:
             raise Exception('No amount specified')
     
-        return Response(buyStock(username, amount,getQuote(ticker,username, request.transactionId), request.transactionId))
+        return Response(buyStock(user, amount,getQuote(ticker,user, request.transactionId), request.transactionId))
     except Exception as e:
-        return handleViewError(e, request)
+        return handleViewError(e, request, user)
 
+@auth
 @csrf_exempt
 @logRequest
 @api_view(['POST','PATCH'])
 def commit_buy(request):
     
-    username = "test"
+    username = request.data.get('username')
+    user = getUser(username, mongoZip(['username', 'balance', 'pending_buy', 'stocks']))
     try:
-        return Response(commitBuy(username, request.transactionId))
+        return Response(commitBuy(user, request.transactionId))
     except Exception as e:
-        return handleViewError(e, request)
+        return handleViewError(e, request, user)
          
-
+@auth
 @csrf_exempt
 @logRequest
 @api_view(['POST'])
 def cancel_buy(request): 
-    username = "test"
+    username = request.data.get('username')
+    user = getUser(username, mongoZip(['username', 'balance', 'pending_buy']))
     try:
-        return Response(cancelBuy(username, request.transactionId))
+        return Response(cancelBuy(user, request.transactionId))
     except Exception as e:
-        return handleViewError(e, request)
+        return handleViewError(e, request, user)
 
+@auth
 @csrf_exempt
 @logRequest
 @api_view(['POST'])
 def sell(request):
-    username = "test"
+    username = request.data.get('username')
     amount = request.data.get('amount', False)
     ticker = request.data.get('ticker', False)
+    user = getUser(username, mongoZip(['username', 'balance', 'stocks']))
     try:
-        return Response(sellStock(username, amount, getQuote(ticker, username, request.transactionId), request.transactionId))
+        return Response(sellStock(user, amount, getQuote(ticker, user, request.transactionId), request.transactionId))
     except Exception as e:
-        return handleViewError(e, request)
+        return handleViewError(e, request, user)
+
+@auth
 @csrf_exempt
 @logRequest
 @api_view(['POST'])
 def commit_sell(request):
-    username = "test"
+    username = request.data.get('username')
+    user = getUser(username, mongoZip(['username', 'balance', 'pending_sell', 'stocks']))
     try:
-        return Response(commitSell(username, request.transactionId))
+        return Response(commitSell(user, request.transactionId))
     except Exception as e:
-        return handleViewError(e, request)
+        return handleViewError(e, request, user)
+
+@auth
 @csrf_exempt
 @logRequest
 @api_view(['POST'])
 def cancel_sell(request):
-    username = "test"
+    username = request.data.get('username')
+    user = getUser(username, mongoZip(['username', 'balance', 'pending_sell']))
     try:
-        return Response(cancelSell(username, request.transactionId))
+        return Response(cancelSell(user, request.transactionId))
     except Exception as e:
-        return handleViewError(e, request)
+        return handleViewError(e, request, user)
 
+@auth
 @csrf_exempt
 @logRequest
 @api_view(['POST'])
 def set_buy_amount(request): 
-    username = "test"
+    username = request.data.get('username')
     amount = request.data.get('amount', False)
     ticker = request.data.get('ticker', False)
+    user = getUser(username, mongoZip(['username', 'balance']))
     try:
-        return Response(setBuyAmount(username, ticker,amount, request.transactionId))
+        return Response(setBuyAmount(user, ticker,amount, request.transactionId))
     except Exception as e:
-        return handleViewError(e, request)
+        return handleViewError(e, request, user)
+
+@auth
 @csrf_exempt
 @logRequest
 @api_view(['POST'])
 def cancel_set_buy(request):
-    username = "test"
+    username = request.data.get('username')
     ticker = request.data.get('ticker', False)
+    user = getUser(username, mongoZip(['username', 'balance', 'buy_triggers']))
     try:
-        return Response(cancelBuyTrigger(username,ticker,request.transactionId))
+        return Response(cancelBuyTrigger(user,ticker,request.transactionId))
     except Exception as e:
-        return handleViewError(e, request)
+        return handleViewError(e, request, user)
 
+@auth
 @csrf_exempt
 @logRequest
 @api_view(['POST'])
 def set_buy_trigger(request):
-    username = "test"
+    username = request.data.get('username')
     ticker = request.data.get('ticker', False)
     price = request.data.get('price', False)
+    user = getUser(username, mongoZip(['username', 'balance', 'pending_trigger']))
     try:
-        return Response(setBuyTrigger(username, ticker, price,request.transactionId))
+        return Response(setBuyTrigger(user, ticker, price,request.transactionId))
     except Exception as e:
-        return handleViewError(e, request)
+        return handleViewError(e, request, user)
+
+@auth
 @csrf_exempt
 @logRequest
 @api_view(['POST'])
 def set_sell_amount(request):
-    username = "test"
+    username = request.data.get('username')
     amount = request.data.get('amount', False)
+    ticker = request.data.get('ticker', False)
+    user = getUser(username, mongoZip(['username', 'balance']))
     try:
-        return Response(setSellAmount(username, amount, request.transactionId))
+        return Response(setSellAmount(user, ticker, amount, request.transactionId))
     except Exception as e:
-        return handleViewError(e, request)
+        return handleViewError(e, request, user)
+
+@auth
 @csrf_exempt
 @logRequest
 @api_view(['POST'])
 def set_sell_trigger(request):
-    username = "test"
+    username =  request.data.get('username')
     price = request.data.get('price', False)
     ticker = request.data.get('ticker', False)
+    user = getUser(username, mongoZip(['username', 'balance', 'pending_trigger', 'stocks']))
     try:
-        return Response(setSellTrigger(username, ticker, price, request.transactionId))
+        return Response(setSellTrigger(user, ticker, price, request.transactionId))
     except Exception as e:
-        return handleViewError(e, request)
+        return handleViewError(e, request, user)
+
+@auth
 @csrf_exempt
 @logRequest
 @api_view(['POST'])
 def cancel_set_sell(request):
-    username = "test"
+    username = request.data.get('username')
     ticker = request.data.get('ticker', False)
+    user = getUser(username, mongoZip(['username', 'balance', 'sell_triggers']))
     try:
-        return Response(cancelSellTrigger(username, ticker,request.transactionId))
+        return Response(cancelSellTrigger(user, ticker,request.transactionId))
     except Exception as e:
-        return handleViewError(e, request)
+        return handleViewError(e, request, user)
+
+@auth
 @logRequest
 @api_view(['GET'])
 def dumplog(request):
+    user = getUser(request.GET.get('username')) if 'username' in request.GET.keys() else None
     try:
         if 'username' in request.GET.keys():
             return Response(dumplogXML(request.GET['username']))
         return Response(dumplogXML())
     except Exception as e:
-        return handleViewError(e, request)
+        return handleViewError(e, request, user)
     
-
+@auth
 @logRequest
 @api_view(['GET'])
 def displaySummary(request):  
+    username = request.GET.get('username')
+    user = getUser(username)
     try:
-        username = 'test'
-        return Response(displayUserSummary(username))
+        return Response(displayUserSummary(user))
     except Exception as e:
-        return handleViewError(e, request)
+        return handleViewError(e, request, user)
     
-
+@auth
 @csrf_exempt
 @api_view(['POST'])
 def createNewUser(request):
-    try:
+    
         body = request.data
-
-        if(createUser(body['name'], body['username'], body['password'])):
+        username = body.get('username')
+        password = body.get('password')
+        name = body.get('name')
+        if(createUser(name, username, password)):
             # TODO: log the user in when the account is created
             return Response("User created")
         
-    except Exception as e:
+    # except Exception as e:
         
-        return handleViewError(e, request)
+    #    return Response(e)
 
+@auth
 @api_view(['GET'])
 def getUserObj(request):
     try:
+
         user = getUser("test")
         print(user)
         return Response(user)
     except Exception as e:
         return handleViewError(e, request)
-

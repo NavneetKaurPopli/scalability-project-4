@@ -10,7 +10,7 @@ env.read_env()
 db, client = getDb()
 
 # moved from log to avoid circular import
-def logError(exception, request):
+def logError(exception, request, user):
     """
     Logs an error.
     to the file BASE_DIR/logs/transactionserver.xml
@@ -25,8 +25,8 @@ def logError(exception, request):
     </errorEvent>
 
     """
-
-    if(not env('LOG')):
+    log = env('LOG') == 'True' or env('LOG') == True 
+    if(not log):
         return
 
     # Get the current timestamp
@@ -36,7 +36,7 @@ def logError(exception, request):
     errorMessage = exception.args[0]
 
     # Get the command name
-    command = request.path.split('/')[-1]
+    command = request.path.split('/')[-2]
 
     # Get the parameters
     json = {
@@ -44,21 +44,21 @@ def logError(exception, request):
         'timestamp': timestamp,
         'server': 'transactionserver',
         'errorMessage': errorMessage,
-        'command': command,
-        'transactionId': request.transactionId
+        'command': command.upper(),
+        'transactionNum': request.transactionId,
+        'username': user['username'] if user else 'admin'
     }
-    json.update(request.GET.dict())
-    json.update(request.POST.dict())
-
+    if user:
+        json['funds'] = user['balance']
     
     dbCallWrapper(json, func = db.log.insert_one)
     
     return 
-def handleViewError(exception, request):
+def handleViewError(exception, request, user):
     """
     Handles a view error.
     """
-    logError(exception, request)
+    logError(exception, request, user)
     statuses = {
         'UserNotFound': status.HTTP_404_NOT_FOUND,
         'UserAlreadyExists': status.HTTP_409_CONFLICT,

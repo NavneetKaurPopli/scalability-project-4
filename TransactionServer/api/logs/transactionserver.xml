@@ -1,0 +1,61 @@
+
+<errorEvent>
+  <timestamp>2022-02-19 17:43:27</timestamp>
+  <server>Transaction Server</server>
+  <errorMessage>'str' object has no attribute 'path'</errorMessage>
+  <command></command>
+  <transactionNum>1</transactionNum>
+</errorEvent>
+<errorEvent>
+  <timestamp>2022-02-19 17:44:05</timestamp>
+  <server>Transaction Server</server>
+  <errorMessage>The `request` argument must be an instance of `django.http.HttpRequest`, not `builtins.str`.</errorMessage>
+  <command></command>
+  <transactionNum>2</transactionNum>
+</errorEvent>
+<errorEvent>
+  <timestamp>2022-02-19 17:49:36</timestamp>
+  <server>Transaction Server</server>
+  <errorMessage>The `request` argument must be an instance of `django.http.HttpRequest`, not `builtins.str`.</errorMessage>
+  <command></command>
+  <transactionNum>3</transactionNum>
+</errorEvent>
+<errorEvent>
+  <timestamp>2022-02-19 17:49:39</timestamp>
+  <server>Transaction Server</server>
+  <errorMessage>The `request` argument must be an instance of `django.http.HttpRequest`, not `builtins.str`.</errorMessage>
+  <command></command>
+  <transactionNum>4</transactionNum>
+</errorEvent>
+<errorEvent>
+  <timestamp>2022-02-19 17:49:43</timestamp>
+  <server>Transaction Server</server>
+  <errorMessage>The `request` argument must be an instance of `django.http.HttpRequest`, not `builtins.str`.</errorMessage>
+  <command></command>
+  <transactionNum>5</transactionNum>
+  <format>json</format>
+</errorEvent>
+<errorEvent>
+  <timestamp>2022-02-19 17:49:53</timestamp>
+  <server>Transaction Server</server>
+  <errorMessage>The `request` argument must be an instance of `django.http.HttpRequest`, not `builtins.str`.</errorMessage>
+  <command></command>
+  <transactionNum>6</transactionNum>
+  <format>api</format>
+</errorEvent>
+<errorEvent>
+  <timestamp>2022-02-19 17:50:50</timestamp>
+  <server>Transaction Server</server>
+  <errorMessage>The `request` argument must be an instance of `django.http.HttpRequest`, not `builtins.str`.</errorMessage>
+  <command></command>
+  <transactionNum>7</transactionNum>
+  <format>api</format>
+</errorEvent>
+<userCommand>
+  <timestamp>2022-02-19 17:53:37</timestamp>
+  <server>Transaction Server</server>
+  <userid>None right now</userid>
+  <transactionNum>8</transactionNum>
+  <command></command>
+  <ticker>"AAPL"</ticker>
+</userCommand>

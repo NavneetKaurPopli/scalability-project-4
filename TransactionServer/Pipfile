@@ -6,7 +6,6 @@ name = "pypi"
 [packages]
 django = "*"
 djangorestframework = "*"
-pymongo = "*"
 dnspython = "*"
 django-environ = "*"
 django-cors-headers = "*"
@@ -15,8 +14,12 @@ mango-jwt = "*"
 django-crontab = "*"
 key-generator = "*"
 django-heroku = "*"
+gunicorn = "*"
+pymongo = "*"
+requests = "*"
+redis = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.10"
+python_version = "3.6"
