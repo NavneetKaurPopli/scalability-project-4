@@ -33,13 +33,8 @@ SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-<<<<<<< HEAD
-
-ALLOWED_HOSTS = ['localhost']
-=======
 CSRF_TRUSTED_ORIGINS = ['https://daytradingseng468.herokuapp.com']
-ALLOWED_HOSTS = []
->>>>>>> ecc24dabbb6432e5e6e18ef7f3c79f3f58ca583b
+ALLOWED_HOSTS = ['.herokuapp.com', 'locahost']
 
 
 # Application definition
