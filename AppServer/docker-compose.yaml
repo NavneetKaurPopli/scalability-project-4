@@ -1,17 +1,46 @@
+# version: "3.9"
+   
+# services:
+#   # nginx:
+#   #     build:
+#   #       context : ./nginx/
+#   #       dockerfile: Nginx.Dockerfile
+#   #     depends_on:
+#   #       - appserver
+#   #     ports:
+#   #       - "5100:5100"
+#   #     restart: always
+#   appserver:
+#     container_name: AppServer
+#     build: .
+#     ports:
+#       - "8000"
+#     command: python manage.py runserver
+
 version: "3.9"
    
 services:
-  app:
-    build: .
-    command: python manage.py runserver 127.0.0.1:8000
-    container_name: AppServer
-    volumes:
-      - .:/AppServer
-    ports:
-      - "8000:8000"
+  db:
+    image: postgres
+    # volumes:
+    #   - ./data/db:/var/lib/postgresql/data
     environment:
-      - REDIS_NAME=redis
-      - REDIS_USER=redis
-      - REDIS_PASSWORD=redis
+      - POSTGRES_NAME=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+  web:
+    image: python:3.9
+    build: Dockerfile
+    command: >
+      bash -c "
+       pwd"
+    # volumes:
+    #   - .:/code
+    expose:
+      - 8000
+    environment:
+      - POSTGRES_NAME=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
     depends_on:
-      - redis
+      - db

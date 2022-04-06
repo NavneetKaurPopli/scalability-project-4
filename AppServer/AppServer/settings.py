@@ -12,9 +12,13 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import django_heroku
 from pathlib import Path
 import environ
+import os
 
 env = environ.Env()
 environ.Env.read_env()
+
+
+
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -30,7 +34,7 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 CSRF_TRUSTED_ORIGINS = ['https://daytradingseng468.herokuapp.com']
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['.herokuapp.com', 'locahost']
 
 
 # Application definition
@@ -87,8 +91,22 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+        'OPTIONS': {
+                'timeout': 1200
+        }
     }
 }
+
+# DATABASES = {
+#         'default': {
+#             'ENGINE': 'djongo',
+#             'NAME': 'your-db-name',
+#             'ENFORCE_SCHEMA': False,
+#             'CLIENT': {
+#                 'host': DBHOST
+#             }  
+#         }
+# }
 
 
 # Password validation
