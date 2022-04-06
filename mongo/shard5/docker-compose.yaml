@@ -1,0 +1,42 @@
+
+version: '3'
+
+services:
+
+  shard5svr1:
+    container_name: tstshard3svr1
+    image: mongo
+    command: mongod --shardsvr --replSet shard5rs --port 27017 --dbpath /data/db
+    ports:
+      - 50007:27017
+    volumes:
+      - shard5svr1:/data/db
+
+  shard5svr2:
+    container_name: tstshard3svr2
+    image: mongo
+    command: mongod --shardsvr --replSet shard5rs --port 27017 --dbpath /data/db
+    ports:
+      - 50008:27017
+    volumes:
+      - shard5svr2:/data/db
+
+  shard5svr3:
+    container_name: tstshard3svr3
+    image: mongo
+    command: mongod --shardsvr --replSet shard5rs --port 27017 --dbpath /data/db
+    ports:
+      - 50009:27017
+    volumes:
+      - shard5svr3:/data/db
+
+networks: 
+  default: 
+    external:
+      name: dta
+
+volumes:
+  tstshard3svr1: {}
+  tstshard3svr2: {}
+  tstshard3svr3: {}
+
