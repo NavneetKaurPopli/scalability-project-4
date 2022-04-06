@@ -47,7 +47,7 @@ services:
 networks: 
   default: 
     external: 
-      name: mongo
+      name: dta
 
 volumes:
   cfgsvr1: {}
