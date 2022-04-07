@@ -22,7 +22,7 @@ services:
       - ./.env
     restart: always
 
-networks:
+networkss:
   default: 
     external: 
       name: dta
