@@ -1,8 +1,6 @@
 import sys
 import requests
 import json
-import concurrent
-from concurrent.futures import ThreadPoolExecutor
 from threading import Thread
 
 headerInfo = {"Content-Type":"application/json", "X-Requested-With":"XMLHttpRequest"}
@@ -41,35 +39,34 @@ def fileProcessor():
 
 def requestManager(batch,username):
 
-    print("ENTERING LOG IN PHASE FOR " + username)
+    print("ENTERING REGISTRATION PHASE FOR " + username)
 
-    endpoint = "localhost:8000/api/users/"
-    payload = {"user": {"email":username + "@gmail.com", "username":username, "password":username}}
+    endpoint = "localhost:8000/api/create_user"
+    payload = {"username":username + "@gmail.com", "name":username, "password":username}
 
     r = s.post(url = endpoint, data = json.dumps(payload), headers = headerInfo)
     res = r.json()
-    # print(r.text)
 
-    if ("errors" in res):
+    # if ("errors" in res):
 
-        print("REGISTRATION FAIL TRYIN TO LOG IN")
-        endpoint = "localhost:8000/api/users/login/"
-        payload = {"user": {"email":username + "@gmail.com", "password":username}}
+    #     print("REGISTRATION FAIL TRYIN TO LOG IN")
+    #     endpoint = "localhost:8000/api/users/login/"
+    #     payload = {"user": {"email":username + "@gmail.com", "password":username}}
 
-        r = s.post(url = endpoint, data = json.dumps(payload), headers = headerInfo)
-        # print(r.text)
-        res = r.json()
+    #     r = s.post(url = endpoint, data = json.dumps(payload), headers = headerInfo)
+    #     # print(r.text)
+    #     res = r.json()
         
 
-        if ("errors" in res):
-            print("ERROR UNABLE TO LOGIN OR REGISTER")
+    #     if ("errors" in res):
+    #         print("ERROR UNABLE TO LOGIN OR REGISTER")
             #exit() 
         
         # print("LOG IN SUCCESSFUL FOR " + username)
 
-    token = "hello"
+    token = "d0946e53d85e7a611ba84f813b7c8ee7269d1c2cbf5dec78a1d3636c25851865d5eed5b99d96fefe6da6f456c281f52ba11040cf921bdd1a281f94a9973bda77"
     tempHeader = headerInfo
-    tempHeader["Authorization"] = "Token " + token
+    tempHeader["Authorization"] = token
     userHeaders[username] = tempHeader
 
     print("AUTHENTICATION SUCCESSFUL FOR " + username)
@@ -81,7 +78,7 @@ def requestManager(batch,username):
             username = element[1]
             amount = element[2].strip(" ")
             endpoint = "localhost:8000/api/add/"
-            payload = {"user": {"username" : username, "amount" : amount}}
+            payload = {"username" : username, "amount" : amount}
             
             r = s.post(url=endpoint, data=json.dumps(payload), headers=userHeaders[username])
             # print("ADD ->  Status Code = " + str(r.status_code) + "\n" + r.text)
@@ -106,19 +103,19 @@ def requestManager(batch,username):
             amount = element[3].strip(" ")
 
             endpoint = "localhost:8000/api/buy"
-            payload = {"user": {"username" : username, "ticker" : ticker, "amount" : amount}}
+            payload = {"username" : username, "ticker" : ticker, "amount" : amount}
             r = s.post(url=endpoint, data=json.dumps(payload), headers=userHeaders[username])
             # print("BUY ->  Status Code = " + str(r.status_code) + "\n" + r.text)
         if element[0][1] == "COMMIT_BUY":
             username = element[1].strip()
             endpoint = "localhost:8000/api/commitbuy/"
-            payload = {"user": {"username" : username}}
+            payload = {"username" : username}
             r = s.post(url=endpoint, data=json.dumps(payload), headers=userHeaders[username])
             # print("COMMIT_BUY ->  Status Code = " + str(r.status_code) + "\n" + r.text)     
         if element[0][1] == "CANCEL_BUY":
             username = element[1].strip()
             endpoint = "localhost:8000/api/cancelbuy/"
-            payload = {"user": {"username" : username}}
+            payload = {"username" : username}
             r = s.post(url=endpoint, data=json.dumps(payload), headers=userHeaders[username])
             # print("CANCEL_BUY ->  " + r.text)
         if element[0][1] == "SELL":
@@ -126,19 +123,19 @@ def requestManager(batch,username):
             ticker = element[2]
             amount = element[3].strip()
             endpoint = "localhost:8000/api/sell/"
-            payload = {"user": {"username" : username, "ticker" : ticker, "amount" : amount}}
+            payload = {"username" : username, "ticker" : ticker, "amount" : amount}
             r = s.post(url=endpoint, data=json.dumps(payload), headers=userHeaders[username])
             # print("SELL ->  " + r.text)
         if element[0][1] == "COMMIT_SELL":
             username = element[1].strip()
             endpoint = "localhost:8000/api/commitsell/"
-            payload = {"user": {"username" : username}} 
+            payload = {"username" : username}
             r = s.post(url=endpoint, data=json.dumps(payload), headers=userHeaders[username])           
             # print("COMMIT_SELL ->  " + r.text)
         if element[0][1] == "CANCEL_SELL":
             username = element[1].strip()
             endpoint = "localhost:8000/api/cancelsell/"
-            payload = {"user": {"username" : username}}
+            payload = {"username" : username}
             r = s.post(url=endpoint, data=json.dumps(payload), headers=userHeaders[username])           
             # print("CANCEL_SELL ->  " + r.text)
         if element[0][1] == "SET_BUY_AMOUNT":
@@ -146,14 +143,14 @@ def requestManager(batch,username):
             ticker = element[2]
             amount = element[3].strip()
             endpoint = "localhost:8000/api/setbuyamount/"
-            payload = {"user": {"username" : username, "ticker" : ticker, "amount" : amount}}
+            payload = {"username" : username, "ticker" : ticker, "amount" : amount}
             r = s.post(url=endpoint, data=json.dumps(payload), headers=userHeaders[username])           
             # print("SET_BUY_AMOUNT ->  " + r.text)
         if element[0][1] == "CANCEL_SET_BUY":
             username = element[1]
             ticker = element[2].strip()
             endpoint = "localhost:8000/api/cancelsetbuy/"
-            payload = {"user": {"username" : username, "ticker" : ticker}}
+            payload = {"username" : username, "ticker" : ticker}
             r = s.post(url=endpoint, data=json.dumps(payload), headers=userHeaders[username])           
             # print("CANCEL_SET_BUY ->  " + r.text)
         if element[0][1] == "SET_BUY_TRIGGER":
@@ -161,7 +158,7 @@ def requestManager(batch,username):
             ticker = element[2]
             amount = element[3].strip()
             endpoint = "localhost:8000/api/setbuytrigger/"
-            payload = {"user": {"username" : username, "ticker" : ticker, "amount" : amount}}
+            payload = {"username" : username, "ticker" : ticker, "amount" : amount}
             r = s.post(url=endpoint, data=json.dumps(payload), headers=userHeaders[username])           
             # print("SET_BUY_TRIGGER ->  " + r.text)
         if element[0][1] == "SET_SELL_AMOUNT":
@@ -169,7 +166,7 @@ def requestManager(batch,username):
             ticker = element[2]
             amount = element[3].strip()
             endpoint = "localhost:8000/api/setsellamount/"
-            payload = {"user": {"username" : username, "ticker" : ticker, "amount" : amount}}
+            payload = {"username" : username, "ticker" : ticker, "amount" : amount}
             r = s.post(url=endpoint, data=json.dumps(payload), headers=userHeaders[username])           
             # print("SET_SELL_AMOUNT ->  " + r.text)
         if element[0][1] == "SET_SELL_TRIGGER":
@@ -177,14 +174,14 @@ def requestManager(batch,username):
             ticker = element[2]
             amount = element[3].strip()
             endpoint = "localhost:8000/api/setselltrigger/"
-            payload = {"user": {"username" : username, "ticker" : ticker, "amount" : amount}}
+            payload = {"username" : username, "ticker" : ticker, "amount" : amount}
             r = s.post(url=endpoint, data=json.dumps(payload), headers=userHeaders[username])           
             # print("SET_SELL_TRIGGER ->  " + r.text)
         if element[0][1] == "CANCEL_SET_SELL":
             username = element[1]
             ticker = element[2].strip()
             endpoint = "localhost:8000/api/cancelsetsell/"
-            payload = {"user": {"username" : username, "ticker" : ticker}}
+            payload = {"username" : username, "ticker" : ticker}
             r = s.post(url=endpoint, data=json.dumps(payload), headers=userHeaders[username]) 
             # print("CANCEL_SET_SELL ->  " + r.text)
         if element[0][1] == "DISPLAY_SUMMARY":
@@ -211,7 +208,7 @@ def main():
         t.join()
 
     
-    endpoint = "https://dta-transaction-server.herokuapp.com/api/dumplog/"  
+    endpoint = "localhost:8000/api/dumplog/"  
     r = s.get(url = endpoint)
     res = r.json()
 
