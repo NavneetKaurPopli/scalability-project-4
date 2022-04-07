@@ -4,7 +4,7 @@ version: '3'
 services:
 
   shard4svr1:
-    container_name: shard3svr1
+    container_name: shard4svr1
     image: mongo
     command: mongod --shardsvr --replSet shard4rs --port 27017 --dbpath /data/db
     ports:
@@ -13,7 +13,7 @@ services:
       - shard4svr1:/data/db
 
   shard4svr2:
-    container_name: shard3svr2
+    container_name: shard4svr2
     image: mongo
     command: mongod --shardsvr --replSet shard4rs --port 27017 --dbpath /data/db
     ports:
@@ -22,7 +22,7 @@ services:
       - shard4svr2:/data/db
 
   shard4svr3:
-    container_name: shard3svr3
+    container_name: shard4svr3
     image: mongo
     command: mongod --shardsvr --replSet shard4rs --port 27017 --dbpath /data/db
     ports:
