@@ -36,7 +36,7 @@ networks:
       name: dta
 
 volumes:
-  tstshard3svr1: {}
-  tstshard3svr2: {}
-  tstshard3svr3: {}
+  shard5svr1: {}
+  shard5svr2: {}
+  shard5svr3: {}
 
