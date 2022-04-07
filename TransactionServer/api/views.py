@@ -12,7 +12,7 @@ from api.utils.decorators import logRequest, auth
 from api.utils.db import mongoZip
 import json 
 
-@auth
+#@auth
 @logRequest
 @api_view(['GET'])
 def quote(request, **kwargs):
@@ -31,7 +31,7 @@ def quote(request, **kwargs):
     except Exception as e:
         return handleViewError(e, request, user)
 
-@auth
+#@auth
 @csrf_exempt
 @logRequest
 @api_view(['POST', 'PATCH'])
@@ -47,7 +47,7 @@ def add(request):
     except Exception as e:
         return handleViewError(e, request, user)
 
-@auth
+#@auth
 @csrf_exempt               
 @logRequest
 @api_view(['POST'])
@@ -67,7 +67,7 @@ def buy(request):
     except Exception as e:
         return handleViewError(e, request, user)
 
-@auth
+#@auth
 @csrf_exempt
 @logRequest
 @api_view(['POST','PATCH'])
@@ -80,7 +80,7 @@ def commit_buy(request):
     except Exception as e:
         return handleViewError(e, request, user)
          
-@auth
+#@auth
 @csrf_exempt
 @logRequest
 @api_view(['POST'])
@@ -92,7 +92,7 @@ def cancel_buy(request):
     except Exception as e:
         return handleViewError(e, request, user)
 
-@auth
+#@auth
 @csrf_exempt
 @logRequest
 @api_view(['POST'])
@@ -106,7 +106,7 @@ def sell(request):
     except Exception as e:
         return handleViewError(e, request, user)
 
-@auth
+#@auth
 @csrf_exempt
 @logRequest
 @api_view(['POST'])
@@ -118,7 +118,7 @@ def commit_sell(request):
     except Exception as e:
         return handleViewError(e, request, user)
 
-@auth
+#@auth
 @csrf_exempt
 @logRequest
 @api_view(['POST'])
@@ -130,7 +130,7 @@ def cancel_sell(request):
     except Exception as e:
         return handleViewError(e, request, user)
 
-@auth
+#@auth
 @csrf_exempt
 @logRequest
 @api_view(['POST'])
@@ -144,7 +144,7 @@ def set_buy_amount(request):
     except Exception as e:
         return handleViewError(e, request, user)
 
-@auth
+#@auth
 @csrf_exempt
 @logRequest
 @api_view(['POST'])
@@ -157,7 +157,7 @@ def cancel_set_buy(request):
     except Exception as e:
         return handleViewError(e, request, user)
 
-@auth
+#@auth
 @csrf_exempt
 @logRequest
 @api_view(['POST'])
@@ -171,7 +171,7 @@ def set_buy_trigger(request):
     except Exception as e:
         return handleViewError(e, request, user)
 
-@auth
+#@auth
 @csrf_exempt
 @logRequest
 @api_view(['POST'])
@@ -185,7 +185,7 @@ def set_sell_amount(request):
     except Exception as e:
         return handleViewError(e, request, user)
 
-@auth
+#@auth
 @csrf_exempt
 @logRequest
 @api_view(['POST'])
@@ -199,7 +199,7 @@ def set_sell_trigger(request):
     except Exception as e:
         return handleViewError(e, request, user)
 
-@auth
+#@auth
 @csrf_exempt
 @logRequest
 @api_view(['POST'])
@@ -212,7 +212,7 @@ def cancel_set_sell(request):
     except Exception as e:
         return handleViewError(e, request, user)
 
-@auth
+#@auth
 @logRequest
 @api_view(['GET'])
 def dumplog(request):
@@ -224,7 +224,7 @@ def dumplog(request):
     except Exception as e:
         return handleViewError(e, request, user)
     
-@auth
+#@auth
 @logRequest
 @api_view(['GET'])
 def displaySummary(request):  
@@ -235,7 +235,7 @@ def displaySummary(request):
     except Exception as e:
         return handleViewError(e, request, user)
     
-@auth
+#@auth
 @csrf_exempt
 @api_view(['POST'])
 def createNewUser(request):
@@ -252,7 +252,7 @@ def createNewUser(request):
         
     #    return Response(e)
 
-@auth
+#@auth
 @api_view(['GET'])
 def getUserObj(request):
     try:
