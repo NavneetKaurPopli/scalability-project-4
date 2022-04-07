@@ -27,6 +27,23 @@ services:
       - 40003:27017
     volumes:
       - cfgsvr3:/data/db
+
+  cfgsvr4:
+    container_name: cfgsvr4
+    image: mongo
+    command: mongod --configsvr --replSet cfgrs --port 27017 --dbpath /data/db
+    ports:
+      - 40004:27017
+    volumes:
+      - cfgsvr4:/data/db
+  cfgsvr5: 
+    container_name: cfgsvr5
+    image: mongo
+    command: mongod --configsvr --replSet cfgrs --port 27017 --dbpath /data/db
+    ports:
+      - 40005:27017
+    volumes:
+      - cfgsvr5:/data/db
 networks: 
   default: 
     external: 
