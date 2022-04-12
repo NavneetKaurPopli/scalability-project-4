@@ -104,7 +104,7 @@ def requestManager(batch,username):
 
             endpoint = url + "/api/buy"
             payload = {"username" : username, "ticker" : ticker, "amount" : amount}
-            r = s.post(url=endpoint, data=payload)
+            r = s.get(url=endpoint, params=payload)
             print("BUY ->  Status Code = " + str(r.status_code) + "\n" + r.text)
         if element[0][1] == "COMMIT_BUY":
             username = element[1].strip()
