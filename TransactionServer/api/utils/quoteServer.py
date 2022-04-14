@@ -9,6 +9,9 @@ class QuoteNotAvailableError(Exception):
     pass
 
 db, client = getDb()
+def make_fake_quote(ticker, user):
+    pass
+
 def getQuote(ticker, user, request):
     
         starttime = datetime.datetime.now()

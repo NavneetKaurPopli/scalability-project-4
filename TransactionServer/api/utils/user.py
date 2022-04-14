@@ -7,6 +7,7 @@ from bson.objectid import ObjectId
 from api.utils.db import dbCallWrapper
 import xml.dom
 import random
+from rest_framework import status
 
 db, client = getDb()
 
@@ -59,9 +60,9 @@ def login(username, password):
 
     if(user):
         # TODO: generate token, return token
-        return user
+        return status.HTTP_200_OK
     else:
-        return False
+        return status.HTTP_400_BAD_REQUEST
 
 # sets the pending transaction to the pending transaction field on the user
 # fails if the user does not have enough balance

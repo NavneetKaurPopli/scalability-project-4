@@ -5,6 +5,7 @@ urlpatterns = [
     path('quote/<str:ticker>/', views.quote, name='quote'),
     path('quote/', views.quote, name='quote'),
     path('add/', views.add, name='add'),
+    path('login_user/', views.login_user, name='login'),
     path('create_user/', views.createNewUser, name='createUser'), # don't need to log this one
     path('get_user/',  views.getUserObj, name='getUser'),
     path('get_user/<str:userId>/', views.getUserObj, name='getUser'),
