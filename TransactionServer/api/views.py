@@ -11,6 +11,17 @@ from rest_framework.response import Response
 from api.utils.decorators import logRequest, auth
 from api.utils.db import mongoZip
 import json 
+from rest_framework import status
+
+@csrf_exempt
+@api_view(['POST'])
+def login_user(request, **kwargs):
+    print("in login")
+    username = request.data['username']
+    password = request.data['password']
+    status = login(username=username, password=password)
+    print("status is, ", status)
+    return Response("request", status=status)
 
 #@auth
 @logRequest
@@ -239,11 +250,13 @@ def displaySummary(request):
 @csrf_exempt
 @api_view(['POST'])
 def createNewUser(request):
-    
+        print("#######################################################request is: ", request.data)
         body = request.data
         username = body.get('username')
-        password = body.get('password')
-        name = body.get('name')
+        print("username is: ", username)
+        password = body['password']
+        name = body['name']
+        
         if(createUser(name, username, password)):
             # TODO: log the user in when the account is created
             return Response("User created")
